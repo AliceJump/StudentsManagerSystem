@@ -1,0 +1,142 @@
+﻿<Window x:Class="StudentsManagerSystem.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StudentsManagerSystem"
+        mc:Ignorable="d"
+        Title="学生管理系统" Height="750" Width="1400" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <!-- 菜单按钮样式 -->
+        <Style x:Key="MenuButtonStyle" TargetType="RadioButton">
+            <Setter Property="Background" Value="#2C3E50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Left" 
+                                            VerticalAlignment="Center" 
+                                            Margin="20,0,0,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#34495E"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background" Value="#3498DB"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 左侧菜单栏 -->
+        <Border Grid.Column="0" Background="#2C3E50">
+            <StackPanel>
+                <!-- 系统标题 -->
+                <Border Background="#1A252F" Height="80">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="学生管理系统" 
+                                   FontSize="24" 
+                                   FontWeight="Bold" 
+                                   Foreground="White" 
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Students Manager System" 
+                                   FontSize="12" 
+                                   Foreground="#BDC3C7" 
+                                   HorizontalAlignment="Center" 
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 菜单项 -->
+                <RadioButton x:Name="btnHome" 
+                             Content="首页" 
+                             Style="{StaticResource MenuButtonStyle}" 
+                             IsChecked="True"
+                             Click="MenuButton_Click"/>
+                
+                <RadioButton x:Name="btnStudentArchive" 
+                             Content="学生档案管理" 
+                             Style="{StaticResource MenuButtonStyle}"
+                             Click="MenuButton_Click"/>
+                
+                <RadioButton x:Name="btnStudentStatus" 
+                             Content="学生学籍管理" 
+                             Style="{StaticResource MenuButtonStyle}"
+                             Click="MenuButton_Click"/>
+                
+                <RadioButton x:Name="btnScoreManage" 
+                             Content="学生成绩管理" 
+                             Style="{StaticResource MenuButtonStyle}"
+                             Click="MenuButton_Click"/>
+                
+                <RadioButton x:Name="btnBasicData" 
+                             Content="基础数据管理" 
+                             Style="{StaticResource MenuButtonStyle}"
+                             Click="MenuButton_Click"/>
+                
+                <RadioButton x:Name="btnQuery" 
+                             Content="信息查询统计" 
+                             Style="{StaticResource MenuButtonStyle}"
+                             Click="MenuButton_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 右侧内容区域 -->
+        <Grid Grid.Column="1" Background="#ECF0F1">
+            <!-- 顶部标题栏 -->
+            <Border Height="80" 
+                    VerticalAlignment="Top" 
+                    Background="White" 
+                    BorderBrush="#BDC3C7" 
+                    BorderThickness="0,0,0,1">
+                <Grid>
+                    <TextBlock x:Name="txtPageTitle" 
+                               Text="欢迎使用学生管理系统" 
+                               FontSize="28" 
+                               FontWeight="Bold" 
+                               Foreground="#2C3E50" 
+                               VerticalAlignment="Center" 
+                               Margin="30,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Right" 
+                                VerticalAlignment="Center" 
+                                Margin="0,0,30,0">
+                        <TextBlock Text="当前时间：" 
+                                   FontSize="14" 
+                                   Foreground="#7F8C8D" 
+                                   VerticalAlignment="Center"/>
+                        <TextBlock x:Name="txtCurrentTime" 
+                                   Text="2026-03-05 10:30:00" 
+                                   FontSize="14" 
+                                   Foreground="#2C3E50" 
+                                   VerticalAlignment="Center" 
+                                   Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 内容显示区域 -->
+            <Frame x:Name="MainFrame" 
+                   NavigationUIVisibility="Hidden" 
+                   Margin="0,80,0,0"/>
+        </Grid>
+
+    </Grid>
+</Window>

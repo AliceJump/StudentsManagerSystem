@@ -1,0 +1,25 @@
+# Build outputs
+**/bin/
+**/obj/
+
+# Visual Studio / VS Code local settings
+.vs/
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Test and coverage
+TestResults/
+coverage/
+
+# Logs and temp
+*.log
+*.tmp
+*.cache
+
+# NuGet packages folder (if present locally)
+packages/

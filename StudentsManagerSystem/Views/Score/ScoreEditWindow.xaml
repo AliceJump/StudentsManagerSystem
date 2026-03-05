@@ -1,0 +1,145 @@
+<Window x:Class="StudentsManagerSystem.Views.Score.ScoreEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StudentsManagerSystem.Views.Score"
+        mc:Ignorable="d"
+        Title="成绩录入/修改" Height="500" Width="700" WindowStartupLocation="CenterScreen">
+    
+    <Window.Resources>
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+        
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+        
+        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#3498DB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="30,10"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2980B9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#F5F5F5">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30">
+                <TextBlock Text="学生成绩录入" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+                
+                <Border Background="White" CornerRadius="5" Padding="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="学号：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStudentNo" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="姓名：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStudentName" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="学年：*" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbAcademicYear" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="2024-2025" IsSelected="True"/>
+                            <ComboBoxItem Content="2023-2024"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="学期：*" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbSemester" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="第一学期" IsSelected="True"/>
+                            <ComboBoxItem Content="第二学期"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="课程：*" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cmbCourse" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="程序设计基础"/>
+                            <ComboBoxItem Content="高等数学"/>
+                            <ComboBoxItem Content="数据结构"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="学分：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="txtCredit" Style="{StaticResource TextBoxStyle}" IsReadOnly="True" Text="4"/>
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="平时成绩：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtRegularScore" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="考试成绩：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtExamScore" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="备注：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="8" Grid.Column="1" x:Name="txtRemarks" 
+                                 Style="{StaticResource TextBoxStyle}" 
+                                 Height="60" 
+                                 TextWrapping="Wrap" 
+                                 AcceptsReturn="True"
+                                 VerticalContentAlignment="Top"/>
+                    </Grid>
+                </Border>
+
+                <!-- 按钮区 -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <Button Content="保存" Style="{StaticResource ButtonStyle}" Click="btnSave_Click"/>
+                        <Button Content="取消" Click="btnCancel_Click">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+                                <Setter Property="Background" Value="#95A5A6"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#7F8C8D"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

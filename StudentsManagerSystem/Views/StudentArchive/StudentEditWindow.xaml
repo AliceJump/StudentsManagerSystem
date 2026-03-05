@@ -1,0 +1,172 @@
+<Window x:Class="StudentsManagerSystem.Views.StudentArchive.StudentEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StudentsManagerSystem.Views.StudentArchive"
+        mc:Ignorable="d"
+        Title="学生信息编辑" Height="700" Width="900" WindowStartupLocation="CenterScreen">
+    
+    <Window.Resources>
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+        
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+        
+        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+        
+        <Style x:Key="DatePickerStyle" TargetType="DatePicker">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#3498DB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="30,10"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2980B9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#F5F5F5">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30">
+                <TextBlock Text="学生基本信息" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+                
+                <Border Background="White" CornerRadius="5" Padding="20" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="学号：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStudentNo" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="姓名：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtName" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="性别：*" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="cmbGender" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="男"/>
+                            <ComboBoxItem Content="女"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="出生日期：*" Style="{StaticResource LabelStyle}"/>
+                        <DatePicker Grid.Row="1" Grid.Column="3" x:Name="dpBirthDate" Style="{StaticResource DatePickerStyle}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="身份证号：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtIdCard" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="民族：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" x:Name="txtNation" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="政治面貌：" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbPoliticalStatus" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="群众"/>
+                            <ComboBoxItem Content="团员"/>
+                            <ComboBoxItem Content="党员"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="联系电话：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="3" Grid.Column="3" x:Name="txtPhone" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="电子邮箱：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtEmail" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="2" Text="入学日期：" Style="{StaticResource LabelStyle}"/>
+                        <DatePicker Grid.Row="4" Grid.Column="3" x:Name="dpEnrollment" Style="{StaticResource DatePickerStyle}"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="院系：*" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbDepartment" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="计算机学院"/>
+                            <ComboBoxItem Content="电子信息学院"/>
+                            <ComboBoxItem Content="机械工程学院"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="5" Grid.Column="2" Text="专业：*" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="5" Grid.Column="3" x:Name="cmbMajor" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="软件工程"/>
+                            <ComboBoxItem Content="计算机科学与技术"/>
+                            <ComboBoxItem Content="网络工程"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="班级：*" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Row="6" Grid.Column="1" x:Name="cmbClass" Style="{StaticResource ComboBoxStyle}">
+                            <ComboBoxItem Content="软工2024-1班"/>
+                            <ComboBoxItem Content="软工2024-2班"/>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="家庭住址：" Style="{StaticResource LabelStyle}" Grid.ColumnSpan="1"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtAddress" 
+                                 Style="{StaticResource TextBoxStyle}" 
+                                 Grid.ColumnSpan="3"/>
+                    </Grid>
+                </Border>
+
+                <!-- 按钮区 -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <Button Content="保存" Style="{StaticResource ButtonStyle}" Click="btnSave_Click"/>
+                        <Button Content="取消" Click="btnCancel_Click">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+                                <Setter Property="Background" Value="#95A5A6"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#7F8C8D"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>
