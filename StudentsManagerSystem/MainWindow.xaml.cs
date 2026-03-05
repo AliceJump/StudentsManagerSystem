@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using StudentsManagerSystem.Views.Query;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -66,7 +67,7 @@ namespace StudentsManagerSystem
                         break;
                     case "btnQuery":
                         txtPageTitle.Text = "信息查询统计";
-                        MainFrame.Navigate(new Uri("Views/Query/QueryView.xaml", UriKind.Relative));
+                        MainFrame.Navigate(new QueryView());
                         break;
                 }
             }

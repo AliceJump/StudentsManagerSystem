@@ -7,12 +7,14 @@ namespace StudentsManagerSystem.Views.Query
     public partial class QueryView : Page
     {
         private List<Student> students = new List<Student>();
-
+        private bool _initialized = false;
         public QueryView()
         {
+
             InitializeComponent();
             LoadSampleData();
             LoadStudentData();
+            _initialized = true;
         }
 
         private void LoadSampleData()
@@ -59,14 +61,14 @@ namespace StudentsManagerSystem.Views.Query
 
         private void cmbQueryType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!_initialized) return;
+
             if (cmbQueryType.SelectedIndex == 0)
             {
-                // 按学生信息查询 - 显示学生列表
                 LoadStudentData();
             }
             else
             {
-                // 统计类查询 - 清空表格，显示提示
                 dataGrid.ItemsSource = null;
                 txtStatistics.Text = "请点击查询按钮执行统计";
             }
