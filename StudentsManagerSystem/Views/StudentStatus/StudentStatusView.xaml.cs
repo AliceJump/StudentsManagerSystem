@@ -132,12 +132,36 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("新增功能将在后续实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            var win = new RegistrationEditWindow();
+            win.Owner = Window.GetWindow(this);
+            if (win.ShowDialog() == true)
+            {
+                // 新增后刷新当前页
+                LoadCurrentTabData();
+            }
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("修改功能将在后续实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (dataGrid.SelectedItem == null)
+            {
+                MessageBox.Show("请先选择要修改的记录！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (tabControl.SelectedIndex == 0 && dataGrid.SelectedItem is StudentRegistration registration)
+            {
+                var win = new RegistrationEditWindow(registration);
+                win.Owner = Window.GetWindow(this);
+                if (win.ShowDialog() == true)
+                {
+                    LoadCurrentTabData();
+                }
+            }
+            else
+            {
+                MessageBox.Show("非学籍登记记录的编辑暂未实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -182,7 +206,18 @@ namespace StudentsManagerSystem.Views.StudentStatus
                 return;
             }
 
-            MessageBox.Show("当前页面已接入数据库，详细编辑/查看窗体可后续补充。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (tabControl.SelectedIndex == 0 && dataGrid.SelectedItem is StudentRegistration reg)
+            {
+                var win = new RegistrationEditWindow(reg);
+                win.Owner = Window.GetWindow(this);
+                // 只读查看
+                win.MakeReadOnly();
+                win.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("详细查看窗体暂未实现。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)

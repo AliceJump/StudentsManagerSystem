@@ -43,6 +43,10 @@ namespace StudentsManagerSystem.Data.SqlServer
                 Log("7. 种子数据 - 学籍/奖助/毕业...");
                 SeedStudentStatusData();
                 Log("   ✓ 学籍/奖助/毕业数据完成");
+
+                Log("8. 种子数据 - 用户...");
+                SeedUsers();
+                Log("   ✓ 用户数据完成");
                 
                 Log("========== 数据库初始化成功! ==========");
             }
@@ -302,6 +306,18 @@ BEGIN
         Remarks NVARCHAR(200) NULL
     );
 END;"
+                ,
+                @"IF OBJECT_ID(N'dbo.Users', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Users
+    (
+        Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        Username NVARCHAR(100) NOT NULL UNIQUE,
+        PasswordHash NVARCHAR(200) NOT NULL,
+        DisplayName NVARCHAR(200) NULL,
+        Role NVARCHAR(100) NULL
+    );
+END;"
             };
 
             foreach (var sql in commands)
@@ -443,6 +459,28 @@ INSERT INTO dbo.GraduationInfos
 VALUES
     (2, N'2024002', N'李四', '2028-06-30', N'正常毕业', N'工学学士', N'GR2028001', N'DEG2028001', N'');");
             }
+        }
+
+        private static void SeedUsers()
+        {
+            using var connection = SqlServerConnectionFactory.CreateConnection();
+            connection.Open();
+
+            if (CountRows(connection, "dbo.Users") > 0)
+            {
+                return;
+            }
+
+            // 默认账户 admin / admin
+            var pwd = "admin";
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(pwd));
+            var hashStr = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+
+            ExecuteNonQuery(connection, $@"
+INSERT INTO dbo.Users (Username, PasswordHash, DisplayName, Role)
+VALUES (N'admin', N'{hashStr}', N'系统管理员', N'Administrator');
+");
         }
 
         private static int CountRows(SqlConnection connection, string tableName)

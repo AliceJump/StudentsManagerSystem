@@ -27,8 +27,23 @@ namespace StudentsManagerSystem
                 Console.WriteLine($"[APP] 详细: {ex.StackTrace}");
             }
             
+            // 在显示主窗口前弹出登录窗口
+            var login = new Views.Login.LoginWindow();
+            var ok = login.ShowDialog();
+            if (ok != true)
+            {
+                // 未登录则退出应用
+                Shutdown();
+                return;
+            }
+
             Console.WriteLine("[APP] 调用 base.OnStartup");
             base.OnStartup(e);
+            // 手动创建并显示主窗口（App.xaml 不再有 StartupUri）
+            var main = new MainWindow();
+            MainWindow = main;
+            main.Show();
+
             Console.WriteLine("[APP] ========== 启动完成 ==========");
         }
     }

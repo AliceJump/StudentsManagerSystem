@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Data.SqlClient;
 using StudentsManagerSystem.Models;
 
@@ -102,6 +103,63 @@ ORDER BY GraduationDate DESC, StudentNo;",
         public void DeleteChange(int id) => ExecuteDelete("dbo.StatusChangeRecords", id);
         public void DeleteScholarship(int id) => ExecuteDelete("dbo.ScholarshipInfos", id);
         public void DeleteGraduation(int id) => ExecuteDelete("dbo.GraduationInfos", id);
+
+        public int AddRegistration(StudentRegistration reg)
+        {
+            using var connection = SqlServerConnectionFactory.CreateConnection();
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+INSERT INTO dbo.StudentRegistrations
+ (StudentId, StudentNo, StudentName, RegistrationDate, AcademicYear, Semester, Status, Remarks)
+VALUES
+ (@StudentId, @StudentNo, @StudentName, @RegistrationDate, @AcademicYear, @Semester, @Status, @Remarks);
+SELECT CAST(SCOPE_IDENTITY() AS int);";
+            command.Parameters.AddWithValue("@StudentId", reg.StudentId);
+            command.Parameters.AddWithValue("@StudentNo", reg.StudentNo ?? string.Empty);
+            command.Parameters.AddWithValue("@StudentName", reg.StudentName ?? string.Empty);
+            if (reg.RegistrationDate.HasValue)
+                command.Parameters.AddWithValue("@RegistrationDate", reg.RegistrationDate.Value);
+            else
+                command.Parameters.AddWithValue("@RegistrationDate", DBNull.Value);
+            command.Parameters.AddWithValue("@AcademicYear", reg.AcademicYear ?? string.Empty);
+            command.Parameters.AddWithValue("@Semester", reg.Semester ?? string.Empty);
+            command.Parameters.AddWithValue("@Status", reg.Status ?? string.Empty);
+            command.Parameters.AddWithValue("@Remarks", reg.Remarks ?? string.Empty);
+            var idObj = command.ExecuteScalar();
+            return idObj == null ? 0 : Convert.ToInt32(idObj);
+        }
+
+        public void UpdateRegistration(StudentRegistration reg)
+        {
+            using var connection = SqlServerConnectionFactory.CreateConnection();
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+UPDATE dbo.StudentRegistrations SET
+ StudentId = @StudentId,
+ StudentNo = @StudentNo,
+ StudentName = @StudentName,
+ RegistrationDate = @RegistrationDate,
+ AcademicYear = @AcademicYear,
+ Semester = @Semester,
+ Status = @Status,
+ Remarks = @Remarks
+WHERE Id = @Id;";
+            command.Parameters.AddWithValue("@Id", reg.Id);
+            command.Parameters.AddWithValue("@StudentId", reg.StudentId);
+            command.Parameters.AddWithValue("@StudentNo", reg.StudentNo ?? string.Empty);
+            command.Parameters.AddWithValue("@StudentName", reg.StudentName ?? string.Empty);
+            if (reg.RegistrationDate.HasValue)
+                command.Parameters.AddWithValue("@RegistrationDate", reg.RegistrationDate.Value);
+            else
+                command.Parameters.AddWithValue("@RegistrationDate", DBNull.Value);
+            command.Parameters.AddWithValue("@AcademicYear", reg.AcademicYear ?? string.Empty);
+            command.Parameters.AddWithValue("@Semester", reg.Semester ?? string.Empty);
+            command.Parameters.AddWithValue("@Status", reg.Status ?? string.Empty);
+            command.Parameters.AddWithValue("@Remarks", reg.Remarks ?? string.Empty);
+            command.ExecuteNonQuery();
+        }
 
         private static List<StudentRegistration> QueryRegistrations(string? sql, Action<SqlCommand>? configure)
         {
