@@ -1,11 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
+using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
 
 namespace StudentsManagerSystem.Views.StudentArchive
 {
     public partial class StudentArchiveView : Page
     {
+        private readonly StudentRepository studentRepository = new StudentRepository();
         private List<Student> students = new List<Student>();
         private List<FamilyInfo> familyInfos = new List<FamilyInfo>();
         private List<RewardRecord> rewards = new List<RewardRecord>();
@@ -21,18 +23,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadSampleData()
         {
-            // 示例数据
-            students = new List<Student>
-            {
-                new Student { Id = 1, StudentNo = "2024001", Name = "张三", Gender = "男", 
-                    BirthDate = new DateTime(2005, 3, 15), IdCard = "110101200503151234", 
-                    Nation = "汉族", PoliticalStatus = "团员", PhoneNumber = "13800138001", 
-                    Department = "计算机学院", Major = "软件工程", Class = "软工2024-1班" },
-                new Student { Id = 2, StudentNo = "2024002", Name = "李四", Gender = "女", 
-                    BirthDate = new DateTime(2005, 6, 20), IdCard = "110101200506201234", 
-                    Nation = "汉族", PoliticalStatus = "群众", PhoneNumber = "13800138002", 
-                    Department = "计算机学院", Major = "软件工程", Class = "软工2024-1班" }
-            };
+            students = studentRepository.GetAll();
 
             familyInfos = new List<FamilyInfo>
             {
@@ -66,6 +57,10 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadStudentData()
         {
+            students = string.IsNullOrWhiteSpace(txtSearch.Text)
+                ? studentRepository.GetAll()
+                : studentRepository.Search(txtSearch.Text);
+
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
@@ -149,16 +144,36 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
+            if (tabControl.SelectedIndex != 0)
+            {
+                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             var window = new StudentEditWindow();
-            window.ShowDialog();
+            if (window.ShowDialog() == true && window.ResultStudent != null)
+            {
+                studentRepository.Add(window.ResultStudent);
+                LoadStudentData();
+            }
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            if (dataGrid.SelectedItem != null)
+            if (tabControl.SelectedIndex != 0)
             {
-                var window = new StudentEditWindow();
-                window.ShowDialog();
+                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (dataGrid.SelectedItem is Student selectedStudent)
+            {
+                var window = new StudentEditWindow(selectedStudent);
+                if (window.ShowDialog() == true && window.ResultStudent != null)
+                {
+                    studentRepository.Update(window.ResultStudent);
+                    LoadStudentData();
+                }
             }
             else
             {
@@ -168,13 +183,20 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (dataGrid.SelectedItem != null)
+            if (tabControl.SelectedIndex != 0)
+            {
+                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (dataGrid.SelectedItem is Student selectedStudent)
             {
                 var result = MessageBox.Show("确定要删除选中的记录吗？", "确认删除", 
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show("删除操作将在后续实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                    studentRepository.Delete(selectedStudent.Id);
+                    LoadStudentData();
                 }
             }
             else
@@ -185,9 +207,15 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnView_Click(object sender, RoutedEventArgs e)
         {
-            if (dataGrid.SelectedItem != null)
+            if (tabControl.SelectedIndex != 0)
             {
-                var window = new StudentDetailWindow();
+                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (dataGrid.SelectedItem is Student selectedStudent)
+            {
+                var window = new StudentDetailWindow(selectedStudent);
                 window.ShowDialog();
             }
             else
@@ -198,12 +226,19 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
+            txtSearch.Text = string.Empty;
             TabControl_SelectionChanged(null!, null!);
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("搜索功能将在后续实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (tabControl.SelectedIndex == 0)
+            {
+                LoadStudentData();
+                return;
+            }
+
+            MessageBox.Show("当前仅为学生基本信息模块接入了数据库搜索。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

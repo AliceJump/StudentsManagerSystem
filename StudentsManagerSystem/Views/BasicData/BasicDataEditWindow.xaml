@@ -5,23 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StudentsManagerSystem.Views.BasicData"
         mc:Ignorable="d"
-        Title="基础数据编辑" Height="400" Width="600" WindowStartupLocation="CenterScreen">
-    
+        Title="基础数据编辑" Height="560" Width="720" WindowStartupLocation="CenterScreen">
+
     <Window.Resources>
         <Style x:Key="LabelStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="10,5"/>
         </Style>
-        
+
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="10,5"/>
-        </Style>
-        
-        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
             <Setter Property="Height" Value="32"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -39,11 +32,11 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
+                        <Border Background="{TemplateBinding Background}"
                                 CornerRadius="4"
                                 Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -57,61 +50,140 @@
     </Window.Resources>
 
     <Grid Background="#F5F5F5">
-        <StackPanel Margin="30">
-            <TextBlock x:Name="txtTitle" Text="基础数据编辑" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
-            
-            <Border Background="White" CornerRadius="5" Padding="20">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30">
+                <TextBlock x:Name="txtTitle" Text="基础数据编辑" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="编号：*" Style="{StaticResource LabelStyle}"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtNo" Style="{StaticResource TextBoxStyle}"/>
+                <Border x:Name="departmentPanel" Background="White" CornerRadius="5" Padding="20" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="名称：*" Style="{StaticResource LabelStyle}"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtName" Style="{StaticResource TextBoxStyle}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="院系编号：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtNo" Style="{StaticResource TextBoxStyle}"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="负责人：" Style="{StaticResource LabelStyle}"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtHead" Style="{StaticResource TextBoxStyle}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="院系名称：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtName" Style="{StaticResource TextBoxStyle}"/>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="联系电话：" Style="{StaticResource LabelStyle}"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtPhone" Style="{StaticResource TextBoxStyle}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="负责人：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtHead" Style="{StaticResource TextBoxStyle}"/>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="备注：" Style="{StaticResource LabelStyle}"/>
-                    <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtRemarks" 
-                             Style="{StaticResource TextBoxStyle}" 
-                             Height="60" 
-                             TextWrapping="Wrap" 
-                             AcceptsReturn="True"
-                             VerticalContentAlignment="Top"/>
-                </Grid>
-            </Border>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="联系电话：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="3" x:Name="txtPhone" Style="{StaticResource TextBoxStyle}"/>
 
-            <!-- 按钮区 -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button Content="保存" Style="{StaticResource ButtonStyle}" Click="btnSave_Click"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="备注：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtRemarks" Style="{StaticResource TextBoxStyle}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Grid.ColumnSpan="3"/>
+                    </Grid>
+                </Border>
+
+                <Border x:Name="majorPanel" Background="White" CornerRadius="5" Padding="20" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="专业编号：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtMajorNo" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="专业名称：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtMajorName" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="所属院系：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtMajorDepartment" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="学制(年)：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="3" x:Name="txtDuration" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="学位类型：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtDegreeType" Style="{StaticResource TextBoxStyle}" Grid.ColumnSpan="3"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="备注：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtMajorRemarks" Style="{StaticResource TextBoxStyle}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Grid.ColumnSpan="3"/>
+                    </Grid>
+                </Border>
+
+                <Border x:Name="classPanel" Background="White" CornerRadius="5" Padding="20" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="班级编号：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtClassNo" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="班级名称：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtClassName" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="所属院系：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtClassDepartment" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="所属专业：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="3" x:Name="txtClassMajor" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="年级：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtGrade" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="班主任：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" x:Name="txtClassTeacher" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="学生人数：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtStudentCount" Style="{StaticResource TextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="备注：" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtClassRemarks" Style="{StaticResource TextBoxStyle}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Grid.ColumnSpan="3"/>
+                    </Grid>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <Button Content="保存" Style="{StaticResource ButtonStyle}" Click="btnSave_Click"/>
                     <Button Content="取消" Click="btnCancel_Click">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
-                            <Setter Property="Background" Value="#95A5A6"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#7F8C8D"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+                                <Setter Property="Background" Value="#95A5A6"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#7F8C8D"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

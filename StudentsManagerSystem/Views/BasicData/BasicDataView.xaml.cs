@@ -1,11 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
+using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
 
 namespace StudentsManagerSystem.Views.BasicData
 {
     public partial class BasicDataView : Page
     {
+        private readonly BasicDataRepository repository = new BasicDataRepository();
         private List<Department> departments = new List<Department>();
         private List<Major> majors = new List<Major>();
         private List<Models.Class> classes = new List<Models.Class>();
@@ -13,41 +15,15 @@ namespace StudentsManagerSystem.Views.BasicData
         public BasicDataView()
         {
             InitializeComponent();
-            LoadSampleData();
+            LoadData();
             LoadDepartmentData();
         }
 
-        private void LoadSampleData()
+        private void LoadData()
         {
-            departments = new List<Department>
-            {
-                new Department { Id = 1, DepartmentNo = "D001", DepartmentName = "计算机学院", 
-                    DepartmentHead = "王教授", PhoneNumber = "010-12345678" },
-                new Department { Id = 2, DepartmentNo = "D002", DepartmentName = "电子信息学院", 
-                    DepartmentHead = "李教授", PhoneNumber = "010-12345679" },
-                new Department { Id = 3, DepartmentNo = "D003", DepartmentName = "机械工程学院", 
-                    DepartmentHead = "张教授", PhoneNumber = "010-12345680" }
-            };
-
-            majors = new List<Major>
-            {
-                new Major { Id = 1, MajorNo = "M001", MajorName = "软件工程", 
-                    DepartmentName = "计算机学院", Duration = 4, DegreeType = "工学学士" },
-                new Major { Id = 2, MajorNo = "M002", MajorName = "计算机科学与技术", 
-                    DepartmentName = "计算机学院", Duration = 4, DegreeType = "工学学士" },
-                new Major { Id = 3, MajorNo = "M003", MajorName = "网络工程", 
-                    DepartmentName = "计算机学院", Duration = 4, DegreeType = "工学学士" }
-            };
-
-            classes = new List<Models.Class>
-            {
-                new Models.Class { Id = 1, ClassNo = "C001", ClassName = "软工2024-1班", 
-                    DepartmentName = "计算机学院", MajorName = "软件工程", 
-                    Grade = "2024", ClassTeacher = "赵老师", StudentCount = 45 },
-                new Models.Class { Id = 2, ClassNo = "C002", ClassName = "软工2024-2班", 
-                    DepartmentName = "计算机学院", MajorName = "软件工程", 
-                    Grade = "2024", ClassTeacher = "钱老师", StudentCount = 48 }
-            };
+            departments = repository.GetDepartments();
+            majors = repository.GetMajors();
+            classes = repository.GetClasses();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -105,34 +81,74 @@ namespace StudentsManagerSystem.Views.BasicData
             dataGrid.ItemsSource = classes;
         }
 
+        private BasicDataItemKind GetCurrentKind()
+        {
+            return tabControl.SelectedIndex switch
+            {
+                0 => BasicDataItemKind.Department,
+                1 => BasicDataItemKind.Major,
+                _ => BasicDataItemKind.Class
+            };
+        }
+
+        private string GetCurrentTitle(string action)
+        {
+            return GetCurrentKind() switch
+            {
+                BasicDataItemKind.Department => $"{action}院系",
+                BasicDataItemKind.Major => $"{action}专业",
+                _ => $"{action}班级"
+            };
+        }
+
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            string title = "";
-            if (tabControl.SelectedIndex == 0)
-                title = "新增院系";
-            else if (tabControl.SelectedIndex == 1)
-                title = "新增专业";
-            else if (tabControl.SelectedIndex == 2)
-                title = "新增班级";
+            var kind = GetCurrentKind();
+            var window = new BasicDataEditWindow(kind, GetCurrentTitle("新增"));
+            if (window.ShowDialog() == true && window.ResultEntity != null)
+            {
+                if (window.ResultEntity is Department department)
+                {
+                    repository.AddDepartment(department);
+                }
+                else if (window.ResultEntity is Major major)
+                {
+                    repository.AddMajor(major);
+                }
+                else if (window.ResultEntity is Models.Class classInfo)
+                {
+                    repository.AddClass(classInfo);
+                }
 
-            var window = new BasicDataEditWindow(title);
-            window.ShowDialog();
+                LoadData();
+                TabControl_SelectionChanged(null!, null!);
+            }
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             if (dataGrid.SelectedItem != null)
             {
-                string title = "";
-                if (tabControl.SelectedIndex == 0)
-                    title = "修改院系";
-                else if (tabControl.SelectedIndex == 1)
-                    title = "修改专业";
-                else if (tabControl.SelectedIndex == 2)
-                    title = "修改班级";
+                var kind = GetCurrentKind();
+                var window = new BasicDataEditWindow(kind, GetCurrentTitle("修改"), dataGrid.SelectedItem);
+                if (window.ShowDialog() == true && window.ResultEntity != null)
+                {
+                    if (window.ResultEntity is Department department)
+                    {
+                        repository.UpdateDepartment(department);
+                    }
+                    else if (window.ResultEntity is Major major)
+                    {
+                        repository.UpdateMajor(major);
+                    }
+                    else if (window.ResultEntity is Models.Class classInfo)
+                    {
+                        repository.UpdateClass(classInfo);
+                    }
 
-                var window = new BasicDataEditWindow(title);
-                window.ShowDialog();
+                    LoadData();
+                    TabControl_SelectionChanged(null!, null!);
+                }
             }
             else
             {
@@ -148,7 +164,21 @@ namespace StudentsManagerSystem.Views.BasicData
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show("删除操作将在后续实现", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                    switch (GetCurrentKind())
+                    {
+                        case BasicDataItemKind.Department:
+                            repository.DeleteDepartment(((Department)dataGrid.SelectedItem).Id);
+                            break;
+                        case BasicDataItemKind.Major:
+                            repository.DeleteMajor(((Major)dataGrid.SelectedItem).Id);
+                            break;
+                        default:
+                            repository.DeleteClass(((Models.Class)dataGrid.SelectedItem).Id);
+                            break;
+                    }
+
+                    LoadData();
+                    TabControl_SelectionChanged(null!, null!);
                 }
             }
             else
@@ -159,6 +189,7 @@ namespace StudentsManagerSystem.Views.BasicData
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
+            LoadData();
             TabControl_SelectionChanged(null!, null!);
         }
     }
