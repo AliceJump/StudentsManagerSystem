@@ -27,10 +27,22 @@ namespace StudentsManagerSystem.Data.SqlServer
                 Log("3. 种子数据 - 院系...");
                 SeedReferenceData();
                 Log("   ✓ 参考数据完成");
+
+                Log("4. 种子数据 - 课程...");
+                SeedCourses();
+                Log("   ✓ 课程数据完成");
                 
-                Log("4. 种子数据 - 学生...");
+                Log("5. 种子数据 - 学生...");
                 SeedStudents();
                 Log("   ✓ 学生数据完成");
+
+                Log("6. 种子数据 - 成绩...");
+                SeedScores();
+                Log("   ✓ 成绩数据完成");
+
+                Log("7. 种子数据 - 学籍/奖助/毕业...");
+                SeedStudentStatusData();
+                Log("   ✓ 学籍/奖助/毕业数据完成");
                 
                 Log("========== 数据库初始化成功! ==========");
             }
@@ -335,6 +347,24 @@ VALUES
             }
         }
 
+        private static void SeedCourses()
+        {
+            using var connection = SqlServerConnectionFactory.CreateConnection();
+            connection.Open();
+
+            if (CountRows(connection, "dbo.Courses") > 0)
+            {
+                return;
+            }
+
+            ExecuteNonQuery(connection, @"
+INSERT INTO dbo.Courses (CourseNo, CourseName, Credit, CourseType, Hours, Department, Remarks)
+VALUES
+    (N'CS101', N'程序设计基础', 4, N'必修', 64, N'计算机学院', N''),
+    (N'MA101', N'高等数学', 5, N'必修', 80, N'计算机学院', N''),
+    (N'CS102', N'数据结构', 4, N'必修', 64, N'计算机学院', N'');");
+        }
+
         private static void SeedStudents()
         {
             using var connection = SqlServerConnectionFactory.CreateConnection();
@@ -351,6 +381,68 @@ INSERT INTO dbo.Students
 VALUES
     (N'2024001', N'张三', N'男', '2005-03-15', N'110101200503151234', N'汉族', N'团员', N'13800138001', N'zhangsan@example.com', N'北京市朝阳区某某街道某某小区', N'计算机学院', N'软件工程', N'软工2024-1班', '2024-09-01', N''),
     (N'2024002', N'李四', N'女', '2005-06-20', N'110101200506201234', N'汉族', N'群众', N'13800138002', N'lisi@example.com', N'北京市海淀区某某街道某某小区', N'计算机学院', N'软件工程', N'软工2024-1班', '2024-09-01', N'');");
+        }
+
+        private static void SeedScores()
+        {
+            using var connection = SqlServerConnectionFactory.CreateConnection();
+            connection.Open();
+
+            if (CountRows(connection, "dbo.Scores") > 0)
+            {
+                return;
+            }
+
+            ExecuteNonQuery(connection, @"
+INSERT INTO dbo.Scores
+    (StudentId, StudentNo, StudentName, AcademicYear, Semester, CourseNo, CourseName, Credit, RegularScore, ExamScore, TotalScore, Grade, Status, Remarks)
+VALUES
+    (1, N'2024001', N'张三', N'2024-2025', N'第一学期', N'CS101', N'程序设计基础', 4, 85, 90, 87.5, N'良好', N'正常', N''),
+    (1, N'2024001', N'张三', N'2024-2025', N'第一学期', N'MA101', N'高等数学', 5, 80, 85, 82.5, N'良好', N'正常', N''),
+    (2, N'2024002', N'李四', N'2024-2025', N'第一学期', N'CS101', N'程序设计基础', 4, 90, 92, 91, N'优秀', N'正常', N'');");
+        }
+
+        private static void SeedStudentStatusData()
+        {
+            using var connection = SqlServerConnectionFactory.CreateConnection();
+            connection.Open();
+
+            if (CountRows(connection, "dbo.StudentRegistrations") == 0)
+            {
+                ExecuteNonQuery(connection, @"
+INSERT INTO dbo.StudentRegistrations
+    (StudentId, StudentNo, StudentName, RegistrationDate, AcademicYear, Semester, Status, Remarks)
+VALUES
+    (1, N'2024001', N'张三', '2024-09-01', N'2024-2025', N'第一学期', N'正常', N''),
+    (2, N'2024002', N'李四', '2024-09-01', N'2024-2025', N'第一学期', N'正常', N'');");
+            }
+
+            if (CountRows(connection, "dbo.StatusChangeRecords") == 0)
+            {
+                ExecuteNonQuery(connection, @"
+INSERT INTO dbo.StatusChangeRecords
+    (StudentId, StudentNo, StudentName, ChangeDate, ChangeType, OriginalInfo, NewInfo, Reason, ApprovalStatus)
+VALUES
+    (1, N'2024001', N'张三', '2024-10-01', N'转专业', N'计算机科学与技术', N'软件工程', N'个人意愿', N'已批准');");
+            }
+
+            if (CountRows(connection, "dbo.ScholarshipInfos") == 0)
+            {
+                ExecuteNonQuery(connection, @"
+INSERT INTO dbo.ScholarshipInfos
+    (StudentId, StudentNo, StudentName, AcademicYear, Semester, ScholarshipType, ScholarshipLevel, Amount, AwardDate, Status)
+VALUES
+    (1, N'2024001', N'张三', N'2024-2025', N'第一学期', N'国家奖学金', N'一等', 8000, '2024-12-20', N'已发放');");
+            }
+
+            if (CountRows(connection, "dbo.GraduationInfos") == 0)
+            {
+                ExecuteNonQuery(connection, @"
+INSERT INTO dbo.GraduationInfos
+    (StudentId, StudentNo, StudentName, GraduationDate, GraduationType, DegreeType, CertificateNo, DegreeNo, Remarks)
+VALUES
+    (2, N'2024002', N'李四', '2028-06-30', N'正常毕业', N'工学学士', N'GR2028001', N'DEG2028001', N'');");
+            }
         }
 
         private static int CountRows(SqlConnection connection, string tableName)

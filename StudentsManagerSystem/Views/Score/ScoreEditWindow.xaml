@@ -98,11 +98,7 @@
                         </ComboBox>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="课程：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cmbCourse" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="程序设计基础"/>
-                            <ComboBoxItem Content="高等数学"/>
-                            <ComboBoxItem Content="数据结构"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cmbCourse" Style="{StaticResource ComboBoxStyle}" SelectionChanged="cmbCourse_SelectionChanged"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="学分：" Style="{StaticResource LabelStyle}"/>
                         <TextBox Grid.Row="5" Grid.Column="1" x:Name="txtCredit" Style="{StaticResource TextBoxStyle}" IsReadOnly="True" Text="4"/>
