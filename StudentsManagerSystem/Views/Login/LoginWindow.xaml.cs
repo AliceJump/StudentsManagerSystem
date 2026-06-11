@@ -31,6 +31,7 @@ namespace StudentsManagerSystem.Views.Login
                 if (repo.ValidateCredentials(user, pwd, out var display))
                 {
                     DisplayName = display ?? user;
+                    MessageBox.Show($"登录成功：{DisplayName}", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
                     DialogResult = true;
                     Close();
                 }

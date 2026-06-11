@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
 
@@ -55,7 +56,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "姓名", Binding = new System.Windows.Data.Binding("StudentName"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "注册日期", Binding = new System.Windows.Data.Binding("RegistrationDate") { StringFormat = "yyyy-MM-dd" }, Width = new DataGridLength(120) });
-            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学年", Binding = new System.Windows.Data.Binding("AcademicYear"), Width = new DataGridLength(120) });
+            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学年", Binding = new System.Windows.Data.Binding("AcademicYear") { Converter = new AcademicYearDisplayConverter() }, Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "学期", Binding = new System.Windows.Data.Binding("Semester"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "状态", Binding = new System.Windows.Data.Binding("Status"), Width = new DataGridLength(80) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "备注", Binding = new System.Windows.Data.Binding("Remarks"), Width = new DataGridLength(200) });
@@ -97,7 +98,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "姓名", Binding = new System.Windows.Data.Binding("StudentName"), Width = new DataGridLength(100) });
-            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学年", Binding = new System.Windows.Data.Binding("AcademicYear"), Width = new DataGridLength(120) });
+            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学年", Binding = new System.Windows.Data.Binding("AcademicYear") { Converter = new AcademicYearDisplayConverter() }, Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "学期", Binding = new System.Windows.Data.Binding("Semester"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "奖学金类型", Binding = new System.Windows.Data.Binding("ScholarshipType"), Width = new DataGridLength(150) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "等级", Binding = new System.Windows.Data.Binding("ScholarshipLevel"), Width = new DataGridLength(80) });
@@ -132,12 +133,25 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            var win = new RegistrationEditWindow();
-            win.Owner = Window.GetWindow(this);
-            if (win.ShowDialog() == true)
+            if (tabControl.SelectedIndex == 0)
             {
-                // 新增后刷新当前页
-                LoadCurrentTabData();
+                var win = new RegistrationEditWindow { Owner = Window.GetWindow(this) };
+                if (win.ShowDialog() == true) LoadCurrentTabData();
+            }
+            else if (tabControl.SelectedIndex == 1)
+            {
+                var win = new StatusChangeEditWindow { Owner = Window.GetWindow(this) };
+                if (win.ShowDialog() == true) LoadCurrentTabData();
+            }
+            else if (tabControl.SelectedIndex == 2)
+            {
+                var win = new ScholarshipEditWindow { Owner = Window.GetWindow(this) };
+                if (win.ShowDialog() == true) LoadCurrentTabData();
+            }
+            else if (tabControl.SelectedIndex == 3)
+            {
+                var win = new GraduationEditWindow { Owner = Window.GetWindow(this) };
+                if (win.ShowDialog() == true) LoadCurrentTabData();
             }
         }
 
@@ -157,6 +171,21 @@ namespace StudentsManagerSystem.Views.StudentStatus
                 {
                     LoadCurrentTabData();
                 }
+            }
+            else if (tabControl.SelectedIndex == 1 && dataGrid.SelectedItem is StatusChangeRecord change)
+            {
+                var win = new StatusChangeEditWindow(change) { Owner = Window.GetWindow(this) };
+                if (win.ShowDialog() == true) LoadCurrentTabData();
+            }
+            else if (tabControl.SelectedIndex == 2 && dataGrid.SelectedItem is ScholarshipInfo scholarship)
+            {
+                var win = new ScholarshipEditWindow(scholarship) { Owner = Window.GetWindow(this) };
+                if (win.ShowDialog() == true) LoadCurrentTabData();
+            }
+            else if (tabControl.SelectedIndex == 3 && dataGrid.SelectedItem is GraduationInfo graduation)
+            {
+                var win = new GraduationEditWindow(graduation) { Owner = Window.GetWindow(this) };
+                if (win.ShowDialog() == true) LoadCurrentTabData();
             }
             else
             {
@@ -211,6 +240,24 @@ namespace StudentsManagerSystem.Views.StudentStatus
                 var win = new RegistrationEditWindow(reg);
                 win.Owner = Window.GetWindow(this);
                 // 只读查看
+                win.MakeReadOnly();
+                win.ShowDialog();
+            }
+            else if (tabControl.SelectedIndex == 1 && dataGrid.SelectedItem is StatusChangeRecord change)
+            {
+                var win = new StatusChangeEditWindow(change) { Owner = Window.GetWindow(this) };
+                win.MakeReadOnly();
+                win.ShowDialog();
+            }
+            else if (tabControl.SelectedIndex == 2 && dataGrid.SelectedItem is ScholarshipInfo scholarship)
+            {
+                var win = new ScholarshipEditWindow(scholarship) { Owner = Window.GetWindow(this) };
+                win.MakeReadOnly();
+                win.ShowDialog();
+            }
+            else if (tabControl.SelectedIndex == 3 && dataGrid.SelectedItem is GraduationInfo graduation)
+            {
+                var win = new GraduationEditWindow(graduation) { Owner = Window.GetWindow(this) };
                 win.MakeReadOnly();
                 win.ShowDialog();
             }

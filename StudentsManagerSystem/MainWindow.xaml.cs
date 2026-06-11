@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using StudentsManagerSystem.ViewModels;
 
 namespace StudentsManagerSystem
 {
@@ -17,16 +18,13 @@ namespace StudentsManagerSystem
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DispatcherTimer timer;
+        private readonly DispatcherTimer timer;
+        private readonly MainViewModel viewModel = new MainViewModel();
 
         public MainWindow()
         {
             InitializeComponent();
-            InitializeTimer();
-        }
-
-        private void InitializeTimer()
-        {
+            DataContext = viewModel;
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -35,7 +33,7 @@ namespace StudentsManagerSystem
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            txtCurrentTime.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            viewModel.CurrentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -45,27 +43,27 @@ namespace StudentsManagerSystem
                 switch (button.Name)
                 {
                     case "btnHome":
-                        txtPageTitle.Text = "欢迎使用学生管理系统";
+                        viewModel.CurrentPageTitle = "欢迎使用学生管理系统";
                         MainFrame.Content = null;
                         break;
                     case "btnStudentArchive":
-                        txtPageTitle.Text = "学生档案管理";
+                        viewModel.CurrentPageTitle = "学生档案管理";
                         MainFrame.Navigate(new Uri("Views/StudentArchive/StudentArchiveView.xaml", UriKind.Relative));
                         break;
                     case "btnStudentStatus":
-                        txtPageTitle.Text = "学生学籍管理";
+                        viewModel.CurrentPageTitle = "学生学籍管理";
                         MainFrame.Navigate(new Uri("Views/StudentStatus/StudentStatusView.xaml", UriKind.Relative));
                         break;
                     case "btnScoreManage":
-                        txtPageTitle.Text = "学生成绩管理";
+                        viewModel.CurrentPageTitle = "学生成绩管理";
                         MainFrame.Navigate(new Uri("Views/Score/ScoreView.xaml", UriKind.Relative));
                         break;
                     case "btnBasicData":
-                        txtPageTitle.Text = "基础数据管理";
+                        viewModel.CurrentPageTitle = "基础数据管理";
                         MainFrame.Navigate(new Uri("Views/BasicData/BasicDataView.xaml", UriKind.Relative));
                         break;
                     case "btnQuery":
-                        txtPageTitle.Text = "信息查询统计";
+                        viewModel.CurrentPageTitle = "信息查询统计";
                         MainFrame.Navigate(new Uri("Views/Query/QueryView.xaml", UriKind.Relative));
                         break;
                 }

@@ -1,6 +1,8 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Windows;
+using StudentsManagerSystem.Common;
+using StudentsManagerSystem.Data;
 using StudentsManagerSystem.Data.SqlServer;
 
 namespace StudentsManagerSystem
@@ -12,39 +14,55 @@ namespace StudentsManagerSystem
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            Console.WriteLine("[APP] ========== 应用启动 ==========");
+            AppLogger.Info("应用启动。");
+
+            DispatcherUnhandledException += (_, args) =>
+            {
+                AppLogger.Error("UI 线程未处理异常。", args.Exception);
+                MessageBox.Show($"发生未处理异常：{args.Exception.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                args.Handled = true;
+            };
+
+            AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            {
+                if (args.ExceptionObject is Exception exception)
+                {
+                    AppLogger.Error("非 UI 线程未处理异常。", exception);
+                }
+            };
             
             try
             {
-                Console.WriteLine("[APP] 开始数据库初始化...");
-                SqlServerDatabaseInitializer.Initialize();
-                Console.WriteLine("[APP] 数据库初始化完成");
+                DatabaseInitializer.Initialize();
+                AppLogger.Info("数据库初始化完成。");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[APP] 初始化异常: {ex.GetType().Name}");
-                Console.WriteLine($"[APP] 错误信息: {ex.Message}");
-                Console.WriteLine($"[APP] 详细: {ex.StackTrace}");
+                AppLogger.Error("数据库初始化失败。", ex);
+                MessageBox.Show($"数据库初始化失败：{ex.Message}", "启动错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                Shutdown(-1);
+                return;
             }
             
-            // 在显示主窗口前弹出登录窗口
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
             var login = new Views.Login.LoginWindow();
             var ok = login.ShowDialog();
             if (ok != true)
             {
-                // 未登录则退出应用
                 Shutdown();
                 return;
             }
 
-            Console.WriteLine("[APP] 调用 base.OnStartup");
             base.OnStartup(e);
-            // 手动创建并显示主窗口（App.xaml 不再有 StartupUri）
             var main = new MainWindow();
+            if (!string.IsNullOrEmpty(login.DisplayName))
+            {
+                main.Title = $"学生管理系统 - {login.DisplayName}";
+            }
             MainWindow = main;
             main.Show();
-
-            Console.WriteLine("[APP] ========== 启动完成 ==========");
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            AppLogger.Info("应用启动完成。");
         }
     }
 

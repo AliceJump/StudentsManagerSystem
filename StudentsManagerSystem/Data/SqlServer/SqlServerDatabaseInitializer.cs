@@ -413,9 +413,9 @@ VALUES
 INSERT INTO dbo.Scores
     (StudentId, StudentNo, StudentName, AcademicYear, Semester, CourseNo, CourseName, Credit, RegularScore, ExamScore, TotalScore, Grade, Status, Remarks)
 VALUES
-    (1, N'2024001', N'张三', N'2024-2025', N'第一学期', N'CS101', N'程序设计基础', 4, 85, 90, 87.5, N'良好', N'正常', N''),
-    (1, N'2024001', N'张三', N'2024-2025', N'第一学期', N'MA101', N'高等数学', 5, 80, 85, 82.5, N'良好', N'正常', N''),
-    (2, N'2024002', N'李四', N'2024-2025', N'第一学期', N'CS101', N'程序设计基础', 4, 90, 92, 91, N'优秀', N'正常', N'');");
+    (1, N'2024001', N'张三', N'2024', N'第一学期', N'CS101', N'程序设计基础', 4, 85, 90, 87.5, N'良好', N'正常', N''),
+    (1, N'2024001', N'张三', N'2024', N'第一学期', N'MA101', N'高等数学', 5, 80, 85, 82.5, N'良好', N'正常', N''),
+    (2, N'2024002', N'李四', N'2024', N'第一学期', N'CS101', N'程序设计基础', 4, 90, 92, 91, N'优秀', N'正常', N'');");
         }
 
         private static void SeedStudentStatusData()
@@ -429,8 +429,8 @@ VALUES
 INSERT INTO dbo.StudentRegistrations
     (StudentId, StudentNo, StudentName, RegistrationDate, AcademicYear, Semester, Status, Remarks)
 VALUES
-    (1, N'2024001', N'张三', '2024-09-01', N'2024-2025', N'第一学期', N'正常', N''),
-    (2, N'2024002', N'李四', '2024-09-01', N'2024-2025', N'第一学期', N'正常', N'');");
+    (1, N'2024001', N'张三', '2024-09-01', N'2024', N'第一学期', N'正常', N''),
+    (2, N'2024002', N'李四', '2024-09-01', N'2024', N'第一学期', N'正常', N'');");
             }
 
             if (CountRows(connection, "dbo.StatusChangeRecords") == 0)
@@ -448,7 +448,7 @@ VALUES
 INSERT INTO dbo.ScholarshipInfos
     (StudentId, StudentNo, StudentName, AcademicYear, Semester, ScholarshipType, ScholarshipLevel, Amount, AwardDate, Status)
 VALUES
-    (1, N'2024001', N'张三', N'2024-2025', N'第一学期', N'国家奖学金', N'一等', 8000, '2024-12-20', N'已发放');");
+    (1, N'2024001', N'张三', N'2024', N'第一学期', N'国家奖学金', N'一等', 8000, '2024-12-20', N'已发放');");
             }
 
             if (CountRows(connection, "dbo.GraduationInfos") == 0)

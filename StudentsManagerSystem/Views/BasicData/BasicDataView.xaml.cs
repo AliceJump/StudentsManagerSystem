@@ -1,13 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
-using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
+using StudentsManagerSystem.Services;
 
 namespace StudentsManagerSystem.Views.BasicData
 {
     public partial class BasicDataView : Page
     {
-        private readonly BasicDataRepository repository = new BasicDataRepository();
+        private readonly BasicDataService basicDataService = new BasicDataService();
         private List<Department> departments = new List<Department>();
         private List<Major> majors = new List<Major>();
         private List<Models.Class> classes = new List<Models.Class>();
@@ -21,9 +21,9 @@ namespace StudentsManagerSystem.Views.BasicData
 
         private void LoadData()
         {
-            departments = repository.GetDepartments();
-            majors = repository.GetMajors();
-            classes = repository.GetClasses();
+            departments = basicDataService.GetDepartments();
+            majors = basicDataService.GetMajors();
+            classes = basicDataService.GetClasses();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -109,15 +109,18 @@ namespace StudentsManagerSystem.Views.BasicData
             {
                 if (window.ResultEntity is Department department)
                 {
-                    repository.AddDepartment(department);
+                    var saveResult = basicDataService.AddDepartment(department);
+                    if (!saveResult.Succeeded) { MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 }
                 else if (window.ResultEntity is Major major)
                 {
-                    repository.AddMajor(major);
+                    var saveResult = basicDataService.AddMajor(major);
+                    if (!saveResult.Succeeded) { MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 }
                 else if (window.ResultEntity is Models.Class classInfo)
                 {
-                    repository.AddClass(classInfo);
+                    var saveResult = basicDataService.AddClass(classInfo);
+                    if (!saveResult.Succeeded) { MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                 }
 
                 LoadData();
@@ -135,15 +138,18 @@ namespace StudentsManagerSystem.Views.BasicData
                 {
                     if (window.ResultEntity is Department department)
                     {
-                        repository.UpdateDepartment(department);
+                        var saveResult = basicDataService.UpdateDepartment(department);
+                        if (!saveResult.Succeeded) { MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                     }
                     else if (window.ResultEntity is Major major)
                     {
-                        repository.UpdateMajor(major);
+                        var saveResult = basicDataService.UpdateMajor(major);
+                        if (!saveResult.Succeeded) { MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                     }
                     else if (window.ResultEntity is Models.Class classInfo)
                     {
-                        repository.UpdateClass(classInfo);
+                        var saveResult = basicDataService.UpdateClass(classInfo);
+                        if (!saveResult.Succeeded) { MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
                     }
 
                     LoadData();
@@ -167,13 +173,13 @@ namespace StudentsManagerSystem.Views.BasicData
                     switch (GetCurrentKind())
                     {
                         case BasicDataItemKind.Department:
-                            repository.DeleteDepartment(((Department)dataGrid.SelectedItem).Id);
+                            basicDataService.DeleteDepartment(((Department)dataGrid.SelectedItem).Id);
                             break;
                         case BasicDataItemKind.Major:
-                            repository.DeleteMajor(((Major)dataGrid.SelectedItem).Id);
+                            basicDataService.DeleteMajor(((Major)dataGrid.SelectedItem).Id);
                             break;
                         default:
-                            repository.DeleteClass(((Models.Class)dataGrid.SelectedItem).Id);
+                            basicDataService.DeleteClass(((Models.Class)dataGrid.SelectedItem).Id);
                             break;
                     }
 

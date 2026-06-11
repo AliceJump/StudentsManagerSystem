@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StudentsManagerSystem.Views.Score"
         mc:Ignorable="d"
-        Title="成绩录入/修改" Height="500" Width="700" WindowStartupLocation="CenterScreen">
+        Title="成绩录入/修改" Height="500" Width="700" MinWidth="620" MinHeight="440" WindowStartupLocation="CenterScreen">
     
     <Window.Resources>
         <Style x:Key="LabelStyle" TargetType="TextBlock">
@@ -57,7 +57,7 @@
     </Window.Resources>
 
     <Grid Background="#F5F5F5">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="30">
                 <TextBlock Text="学生成绩录入" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
                 
@@ -85,10 +85,10 @@
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="姓名：*" Style="{StaticResource LabelStyle}"/>
                         <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStudentName" Style="{StaticResource TextBoxStyle}"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="学年：*" Style="{StaticResource LabelStyle}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="起始学年：*" Style="{StaticResource LabelStyle}"/>
                         <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbAcademicYear" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="2024-2025" IsSelected="True"/>
-                            <ComboBoxItem Content="2023-2024"/>
+                            <ComboBoxItem Content="2024" IsSelected="True"/>
+                            <ComboBoxItem Content="2023"/>
                         </ComboBox>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="学期：*" Style="{StaticResource LabelStyle}"/>

@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
 
@@ -52,7 +53,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
             txtStudentNo.Text = model.StudentNo;
             txtStudentName.Text = model.StudentName;
             dpRegistrationDate.SelectedDate = model.RegistrationDate ?? DateTime.Now;
-            txtAcademicYear.Text = model.AcademicYear;
+            txtAcademicYear.Text = AcademicYearHelper.NormalizeStartYear(model.AcademicYear);
             cmbSemester.SelectedItem = string.IsNullOrEmpty(model.Semester) ? "1" : model.Semester;
             txtRemarks.Text = model.Remarks;
         }
@@ -60,20 +61,51 @@ namespace StudentsManagerSystem.Views.StudentStatus
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             var no = txtStudentNo.Text.Trim();
-            if (string.IsNullOrEmpty(no))
+            if (!InputValidator.ValidateStudentNo(no))
             {
-                MessageBox.Show("学号不能为空", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("学号格式错误", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+            if (string.IsNullOrWhiteSpace(txtStudentName.Text) || !InputValidator.ValidateName(txtStudentName.Text.Trim()))
+            {
+                MessageBox.Show("姓名格式错误", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (dpRegistrationDate.SelectedDate == null)
+            {
+                MessageBox.Show("请选择注册日期", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (!InputValidator.ValidateAcademicYear(txtAcademicYear.Text.Trim()))
+            {
+                MessageBox.Show("学年格式错误，应输入4位起始学年，例如 2024", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (!InputValidator.ValidateSemester(cmbSemester.SelectedItem?.ToString() ?? string.Empty))
+            {
+                MessageBox.Show("学期格式错误", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             model.StudentNo = no;
             model.StudentName = txtStudentName.Text.Trim();
             model.RegistrationDate = dpRegistrationDate.SelectedDate;
-            model.AcademicYear = txtAcademicYear.Text.Trim();
+            model.AcademicYear = AcademicYearHelper.NormalizeStartYear(txtAcademicYear.Text.Trim());
             model.Semester = cmbSemester.SelectedItem?.ToString() ?? string.Empty;
             model.Remarks = txtRemarks.Text.Trim();
 
             try
             {
+                if (model.Id != 0 && !repository.RegistrationExists(model.Id))
+                {
+                    MessageBox.Show("当前记录已不存在，请刷新后重试", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+                if (repository.RegistrationDuplicateExists(model))
+                {
+                    MessageBox.Show("该学号已经存在登记记录", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
                 if (model.Id == 0)
                 {
                     var id = repository.AddRegistration(model);

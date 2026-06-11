@@ -1,11 +1,13 @@
 using StudentsManagerSystem.Models;
 using System.Windows;
+using StudentsManagerSystem.Services;
 
 namespace StudentsManagerSystem.Views.StudentArchive
 {
     public partial class StudentEditWindow : Window
     {
         private readonly int editingStudentId;
+        private readonly StudentService studentService = new StudentService();
 
         public Student? ResultStudent { get; private set; }
 
@@ -67,18 +69,24 @@ namespace StudentsManagerSystem.Views.StudentArchive
                 return;
             }
 
+            var studentNo = txtStudentNo.Text.Trim();
+            var name = txtName.Text.Trim();
+            var idCard = txtIdCard.Text.Trim();
+            var phone = txtPhone.Text.Trim();
+            var email = txtEmail.Text.Trim();
+
             ResultStudent = new Student
             {
                 Id = editingStudentId,
-                StudentNo = txtStudentNo.Text.Trim(),
-                Name = txtName.Text.Trim(),
+                StudentNo = studentNo,
+                Name = name,
                 Gender = ((System.Windows.Controls.ComboBoxItem)cmbGender.SelectedItem).Content?.ToString() ?? string.Empty,
                 BirthDate = dpBirthDate.SelectedDate,
-                IdCard = txtIdCard.Text.Trim(),
+                IdCard = idCard,
                 Nation = txtNation.Text.Trim(),
                 PoliticalStatus = cmbPoliticalStatus.SelectedItem is System.Windows.Controls.ComboBoxItem politicalStatusItem ? politicalStatusItem.Content?.ToString() ?? string.Empty : string.Empty,
-                PhoneNumber = txtPhone.Text.Trim(),
-                Email = txtEmail.Text.Trim(),
+                PhoneNumber = phone,
+                Email = email,
                 Address = txtAddress.Text.Trim(),
                 Department = cmbDepartment.SelectedItem is System.Windows.Controls.ComboBoxItem departmentItem ? departmentItem.Content?.ToString() ?? string.Empty : string.Empty,
                 Major = cmbMajor.SelectedItem is System.Windows.Controls.ComboBoxItem majorItem ? majorItem.Content?.ToString() ?? string.Empty : string.Empty,
@@ -87,8 +95,13 @@ namespace StudentsManagerSystem.Views.StudentArchive
                 Photo = string.Empty
             };
 
-            MessageBox.Show("保存成功！", "提示", 
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            var validation = studentService.Validate(ResultStudent, editingStudentId);
+            if (!validation.Succeeded)
+            {
+                MessageBox.Show(validation.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             this.DialogResult = true;
             this.Close();
         }

@@ -1,12 +1,15 @@
-using System;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using StudentsManagerSystem.Data;
 using StudentsManagerSystem.Models;
 
 namespace StudentsManagerSystem.Data.SqlServer
 {
+    /// <summary>
+    /// 学籍、奖助、毕业仓储。
+    /// </summary>
     internal sealed class StudentStatusRepository
     {
-        public List<StudentRegistration> GetRegistrations() => QueryRegistrations(null, null);
+        public List<StudentRegistration> GetRegistrations() => QueryRegistrations(null);
 
         public List<StudentRegistration> SearchRegistrations(string keyword)
         {
@@ -16,19 +19,19 @@ namespace StudentsManagerSystem.Data.SqlServer
                 return GetRegistrations();
             }
 
-            return QueryRegistrations(@"
-SELECT Id, StudentId, StudentNo, StudentName, RegistrationDate, AcademicYear, Semester, Status, Remarks
-FROM dbo.StudentRegistrations
-WHERE StudentNo LIKE @Keyword
-   OR StudentName LIKE @Keyword
-   OR AcademicYear LIKE @Keyword
-   OR Semester LIKE @Keyword
-   OR Status LIKE @Keyword
-ORDER BY StudentNo;",
-                command => command.Parameters.AddWithValue("@Keyword", $"%{keyword}%"));
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.StudentRegistrations.AsNoTracking()
+                .Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.AcademicYear, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Semester, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Status, $"%{keyword}%"))
+                .OrderBy(item => item.StudentNo)
+                .ToList();
         }
 
-        public List<StatusChangeRecord> GetChanges() => QueryChanges(null, null);
+        public List<StatusChangeRecord> GetChanges() => QueryChanges(null);
 
         public List<StatusChangeRecord> SearchChanges(string keyword)
         {
@@ -38,21 +41,22 @@ ORDER BY StudentNo;",
                 return GetChanges();
             }
 
-            return QueryChanges(@"
-SELECT Id, StudentId, StudentNo, StudentName, ChangeDate, ChangeType, OriginalInfo, NewInfo, Reason, ApprovalStatus
-FROM dbo.StatusChangeRecords
-WHERE StudentNo LIKE @Keyword
-   OR StudentName LIKE @Keyword
-   OR ChangeType LIKE @Keyword
-   OR OriginalInfo LIKE @Keyword
-   OR NewInfo LIKE @Keyword
-   OR Reason LIKE @Keyword
-   OR ApprovalStatus LIKE @Keyword
-ORDER BY ChangeDate DESC, StudentNo;",
-                command => command.Parameters.AddWithValue("@Keyword", $"%{keyword}%"));
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.StatusChangeRecords.AsNoTracking()
+                .Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ChangeType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.OriginalInfo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.NewInfo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Reason, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ApprovalStatus, $"%{keyword}%"))
+                .OrderByDescending(item => item.ChangeDate)
+                .ThenBy(item => item.StudentNo)
+                .ToList();
         }
 
-        public List<ScholarshipInfo> GetScholarships() => QueryScholarships(null, null);
+        public List<ScholarshipInfo> GetScholarships() => QueryScholarships(null);
 
         public List<ScholarshipInfo> SearchScholarships(string keyword)
         {
@@ -62,21 +66,22 @@ ORDER BY ChangeDate DESC, StudentNo;",
                 return GetScholarships();
             }
 
-            return QueryScholarships(@"
-SELECT Id, StudentId, StudentNo, StudentName, AcademicYear, Semester, ScholarshipType, ScholarshipLevel, Amount, AwardDate, Status
-FROM dbo.ScholarshipInfos
-WHERE StudentNo LIKE @Keyword
-   OR StudentName LIKE @Keyword
-   OR AcademicYear LIKE @Keyword
-   OR Semester LIKE @Keyword
-   OR ScholarshipType LIKE @Keyword
-   OR ScholarshipLevel LIKE @Keyword
-   OR Status LIKE @Keyword
-ORDER BY AwardDate DESC, StudentNo;",
-                command => command.Parameters.AddWithValue("@Keyword", $"%{keyword}%"));
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.ScholarshipInfos.AsNoTracking()
+                .Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.AcademicYear, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Semester, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ScholarshipType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ScholarshipLevel, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Status, $"%{keyword}%"))
+                .OrderByDescending(item => item.AwardDate)
+                .ThenBy(item => item.StudentNo)
+                .ToList();
         }
 
-        public List<GraduationInfo> GetGraduations() => QueryGraduations(null, null);
+        public List<GraduationInfo> GetGraduations() => QueryGraduations(null);
 
         public List<GraduationInfo> SearchGraduations(string keyword)
         {
@@ -86,189 +91,210 @@ ORDER BY AwardDate DESC, StudentNo;",
                 return GetGraduations();
             }
 
-            return QueryGraduations(@"
-SELECT Id, StudentId, StudentNo, StudentName, GraduationDate, GraduationType, DegreeType, CertificateNo, DegreeNo, Remarks
-FROM dbo.GraduationInfos
-WHERE StudentNo LIKE @Keyword
-   OR StudentName LIKE @Keyword
-   OR GraduationType LIKE @Keyword
-   OR DegreeType LIKE @Keyword
-   OR CertificateNo LIKE @Keyword
-   OR DegreeNo LIKE @Keyword
-ORDER BY GraduationDate DESC, StudentNo;",
-                command => command.Parameters.AddWithValue("@Keyword", $"%{keyword}%"));
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.GraduationInfos.AsNoTracking()
+                .Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.GraduationType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.DegreeType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.CertificateNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.DegreeNo, $"%{keyword}%"))
+                .OrderByDescending(item => item.GraduationDate)
+                .ThenBy(item => item.StudentNo)
+                .ToList();
         }
 
-        public void DeleteRegistration(int id) => ExecuteDelete("dbo.StudentRegistrations", id);
-        public void DeleteChange(int id) => ExecuteDelete("dbo.StatusChangeRecords", id);
-        public void DeleteScholarship(int id) => ExecuteDelete("dbo.ScholarshipInfos", id);
-        public void DeleteGraduation(int id) => ExecuteDelete("dbo.GraduationInfos", id);
+        public void DeleteRegistration(int id) => DeleteEntity<StudentRegistration>(id);
+
+        public void DeleteChange(int id) => DeleteEntity<StatusChangeRecord>(id);
+
+        public void DeleteScholarship(int id) => DeleteEntity<ScholarshipInfo>(id);
+
+        public void DeleteGraduation(int id) => DeleteEntity<GraduationInfo>(id);
+
+        public int AddChange(StatusChangeRecord record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.StatusChangeRecords.Add(record);
+            context.SaveChanges();
+            return record.Id;
+        }
+
+        public void UpdateChange(StatusChangeRecord record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.StatusChangeRecords.Update(record);
+            context.SaveChanges();
+        }
+
+        public int AddScholarship(ScholarshipInfo record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.ScholarshipInfos.Add(record);
+            context.SaveChanges();
+            return record.Id;
+        }
+
+        public void UpdateScholarship(ScholarshipInfo record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.ScholarshipInfos.Update(record);
+            context.SaveChanges();
+        }
+
+        public int AddGraduation(GraduationInfo record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.GraduationInfos.Add(record);
+            context.SaveChanges();
+            return record.Id;
+        }
+
+        public void UpdateGraduation(GraduationInfo record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.GraduationInfos.Update(record);
+            context.SaveChanges();
+        }
+
+        public bool RegistrationExists(int id) => ExistsById<StudentRegistration>(id);
+
+        public bool ChangeExists(int id) => ExistsById<StatusChangeRecord>(id);
+
+        public bool ScholarshipExists(int id) => ExistsById<ScholarshipInfo>(id);
+
+        public bool GraduationExists(int id) => ExistsById<GraduationInfo>(id);
+
+        public bool RegistrationDuplicateExists(StudentRegistration record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.StudentRegistrations.Any(item => item.StudentNo == record.StudentNo && item.Id != record.Id);
+        }
+
+        public bool ChangeDuplicateExists(StatusChangeRecord record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.StatusChangeRecords.Any(item => item.StudentNo == record.StudentNo && item.Id != record.Id);
+        }
+
+        public bool ScholarshipDuplicateExists(ScholarshipInfo record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.ScholarshipInfos.Any(item => item.StudentNo == record.StudentNo && item.Id != record.Id);
+        }
+
+        public bool GraduationDuplicateExists(GraduationInfo record)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.GraduationInfos.Any(item => item.StudentNo == record.StudentNo && item.Id != record.Id);
+        }
 
         public int AddRegistration(StudentRegistration reg)
         {
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-INSERT INTO dbo.StudentRegistrations
- (StudentId, StudentNo, StudentName, RegistrationDate, AcademicYear, Semester, Status, Remarks)
-VALUES
- (@StudentId, @StudentNo, @StudentName, @RegistrationDate, @AcademicYear, @Semester, @Status, @Remarks);
-SELECT CAST(SCOPE_IDENTITY() AS int);";
-            command.Parameters.AddWithValue("@StudentId", reg.StudentId);
-            command.Parameters.AddWithValue("@StudentNo", reg.StudentNo ?? string.Empty);
-            command.Parameters.AddWithValue("@StudentName", reg.StudentName ?? string.Empty);
-            if (reg.RegistrationDate.HasValue)
-                command.Parameters.AddWithValue("@RegistrationDate", reg.RegistrationDate.Value);
-            else
-                command.Parameters.AddWithValue("@RegistrationDate", DBNull.Value);
-            command.Parameters.AddWithValue("@AcademicYear", reg.AcademicYear ?? string.Empty);
-            command.Parameters.AddWithValue("@Semester", reg.Semester ?? string.Empty);
-            command.Parameters.AddWithValue("@Status", reg.Status ?? string.Empty);
-            command.Parameters.AddWithValue("@Remarks", reg.Remarks ?? string.Empty);
-            var idObj = command.ExecuteScalar();
-            return idObj == null ? 0 : Convert.ToInt32(idObj);
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.StudentRegistrations.Add(reg);
+            context.SaveChanges();
+            return reg.Id;
         }
 
         public void UpdateRegistration(StudentRegistration reg)
         {
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-UPDATE dbo.StudentRegistrations SET
- StudentId = @StudentId,
- StudentNo = @StudentNo,
- StudentName = @StudentName,
- RegistrationDate = @RegistrationDate,
- AcademicYear = @AcademicYear,
- Semester = @Semester,
- Status = @Status,
- Remarks = @Remarks
-WHERE Id = @Id;";
-            command.Parameters.AddWithValue("@Id", reg.Id);
-            command.Parameters.AddWithValue("@StudentId", reg.StudentId);
-            command.Parameters.AddWithValue("@StudentNo", reg.StudentNo ?? string.Empty);
-            command.Parameters.AddWithValue("@StudentName", reg.StudentName ?? string.Empty);
-            if (reg.RegistrationDate.HasValue)
-                command.Parameters.AddWithValue("@RegistrationDate", reg.RegistrationDate.Value);
-            else
-                command.Parameters.AddWithValue("@RegistrationDate", DBNull.Value);
-            command.Parameters.AddWithValue("@AcademicYear", reg.AcademicYear ?? string.Empty);
-            command.Parameters.AddWithValue("@Semester", reg.Semester ?? string.Empty);
-            command.Parameters.AddWithValue("@Status", reg.Status ?? string.Empty);
-            command.Parameters.AddWithValue("@Remarks", reg.Remarks ?? string.Empty);
-            command.ExecuteNonQuery();
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.StudentRegistrations.Update(reg);
+            context.SaveChanges();
         }
 
-        private static List<StudentRegistration> QueryRegistrations(string? sql, Action<SqlCommand>? configure)
+        private static List<StudentRegistration> QueryRegistrations(string? keyword)
         {
-            sql ??= @"
-SELECT Id, StudentId, StudentNo, StudentName, RegistrationDate, AcademicYear, Semester, Status, Remarks
-FROM dbo.StudentRegistrations
-ORDER BY StudentNo;";
-            return Query(sql, configure, reader => new StudentRegistration
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var query = context.StudentRegistrations.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(keyword))
             {
-                Id = reader.GetInt32(0),
-                StudentId = reader.GetInt32(1),
-                StudentNo = reader.GetString(2),
-                StudentName = reader.GetString(3),
-                RegistrationDate = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
-                AcademicYear = reader.GetString(5),
-                Semester = reader.GetString(6),
-                Status = reader.GetString(7),
-                Remarks = reader.IsDBNull(8) ? string.Empty : reader.GetString(8)
-            });
-        }
-
-        private static List<StatusChangeRecord> QueryChanges(string? sql, Action<SqlCommand>? configure)
-        {
-            sql ??= @"
-SELECT Id, StudentId, StudentNo, StudentName, ChangeDate, ChangeType, OriginalInfo, NewInfo, Reason, ApprovalStatus
-FROM dbo.StatusChangeRecords
-ORDER BY ChangeDate DESC, StudentNo;";
-            return Query(sql, configure, reader => new StatusChangeRecord
-            {
-                Id = reader.GetInt32(0),
-                StudentId = reader.GetInt32(1),
-                StudentNo = reader.GetString(2),
-                StudentName = reader.GetString(3),
-                ChangeDate = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
-                ChangeType = reader.GetString(5),
-                OriginalInfo = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
-                NewInfo = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
-                Reason = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
-                ApprovalStatus = reader.GetString(9)
-            });
-        }
-
-        private static List<ScholarshipInfo> QueryScholarships(string? sql, Action<SqlCommand>? configure)
-        {
-            sql ??= @"
-SELECT Id, StudentId, StudentNo, StudentName, AcademicYear, Semester, ScholarshipType, ScholarshipLevel, Amount, AwardDate, Status
-FROM dbo.ScholarshipInfos
-ORDER BY AwardDate DESC, StudentNo;";
-            return Query(sql, configure, reader => new ScholarshipInfo
-            {
-                Id = reader.GetInt32(0),
-                StudentId = reader.GetInt32(1),
-                StudentNo = reader.GetString(2),
-                StudentName = reader.GetString(3),
-                AcademicYear = reader.GetString(4),
-                Semester = reader.GetString(5),
-                ScholarshipType = reader.GetString(6),
-                ScholarshipLevel = reader.GetString(7),
-                Amount = reader.GetDecimal(8),
-                AwardDate = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
-                Status = reader.GetString(10)
-            });
-        }
-
-        private static List<GraduationInfo> QueryGraduations(string? sql, Action<SqlCommand>? configure)
-        {
-            sql ??= @"
-SELECT Id, StudentId, StudentNo, StudentName, GraduationDate, GraduationType, DegreeType, CertificateNo, DegreeNo, Remarks
-FROM dbo.GraduationInfos
-ORDER BY GraduationDate DESC, StudentNo;";
-            return Query(sql, configure, reader => new GraduationInfo
-            {
-                Id = reader.GetInt32(0),
-                StudentId = reader.GetInt32(1),
-                StudentNo = reader.GetString(2),
-                StudentName = reader.GetString(3),
-                GraduationDate = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
-                GraduationType = reader.GetString(5),
-                DegreeType = reader.GetString(6),
-                CertificateNo = reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
-                DegreeNo = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
-                Remarks = reader.IsDBNull(9) ? string.Empty : reader.GetString(9)
-            });
-        }
-
-        private static List<T> Query<T>(string sql, Action<SqlCommand>? configure, Func<SqlDataReader, T> map)
-        {
-            var items = new List<T>();
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
-            command.CommandText = sql;
-            configure?.Invoke(command);
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                items.Add(map(reader));
+                query = query.Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.AcademicYear, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Semester, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Status, $"%{keyword}%"));
             }
-            return items;
+
+            return query.OrderBy(item => item.StudentNo).ToList();
         }
 
-        private static void ExecuteDelete(string tableName, int id)
+        private static List<StatusChangeRecord> QueryChanges(string? keyword)
         {
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
-            command.CommandText = $"DELETE FROM {tableName} WHERE Id = @Id;";
-            command.Parameters.AddWithValue("@Id", id);
-            command.ExecuteNonQuery();
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var query = context.StatusChangeRecords.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ChangeType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.OriginalInfo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.NewInfo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Reason, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ApprovalStatus, $"%{keyword}%"));
+            }
+
+            return query.OrderByDescending(item => item.ChangeDate).ThenBy(item => item.StudentNo).ToList();
+        }
+
+        private static List<ScholarshipInfo> QueryScholarships(string? keyword)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var query = context.ScholarshipInfos.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.AcademicYear, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Semester, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ScholarshipType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.ScholarshipLevel, $"%{keyword}%") ||
+                    EF.Functions.Like(item.Status, $"%{keyword}%"));
+            }
+
+            return query.OrderByDescending(item => item.AwardDate).ThenBy(item => item.StudentNo).ToList();
+        }
+
+        private static List<GraduationInfo> QueryGraduations(string? keyword)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var query = context.GraduationInfos.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(item =>
+                    EF.Functions.Like(item.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.StudentName, $"%{keyword}%") ||
+                    EF.Functions.Like(item.GraduationType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.DegreeType, $"%{keyword}%") ||
+                    EF.Functions.Like(item.CertificateNo, $"%{keyword}%") ||
+                    EF.Functions.Like(item.DegreeNo, $"%{keyword}%"));
+            }
+
+            return query.OrderByDescending(item => item.GraduationDate).ThenBy(item => item.StudentNo).ToList();
+        }
+
+        private static bool ExistsById<TEntity>(int id) where TEntity : class
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Set<TEntity>().Any(item => EF.Property<int>(item, "Id") == id);
+        }
+
+        private static void DeleteEntity<TEntity>(int id) where TEntity : class
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var entity = context.Set<TEntity>().Find(id);
+            if (entity == null)
+            {
+                return;
+            }
+
+            context.Set<TEntity>().Remove(entity);
+            context.SaveChanges();
         }
     }
 }

@@ -1,14 +1,14 @@
 using System.Windows;
 using System.Windows.Controls;
-using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
+using StudentsManagerSystem.Services;
 
 namespace StudentsManagerSystem.Views.StudentArchive
 {
     public partial class StudentArchiveView : Page
     {
-        private readonly StudentRepository studentRepository = new StudentRepository();
-        private List<Student> students = new List<Student>();
+        private readonly StudentService studentService = new StudentService();
+        private readonly System.Collections.ObjectModel.ObservableCollection<Student> students = new System.Collections.ObjectModel.ObservableCollection<Student>();
         private List<FamilyInfo> familyInfos = new List<FamilyInfo>();
         private List<RewardRecord> rewards = new List<RewardRecord>();
         private List<PunishmentRecord> punishments = new List<PunishmentRecord>();
@@ -23,8 +23,6 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadSampleData()
         {
-            students = studentRepository.GetAll();
-
             familyInfos = new List<FamilyInfo>
             {
                 new FamilyInfo { Id = 1, StudentId = 1, RelationName = "张父", 
@@ -57,13 +55,18 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadStudentData()
         {
-            students = string.IsNullOrWhiteSpace(txtSearch.Text)
-                ? studentRepository.GetAll()
-                : studentRepository.Search(txtSearch.Text);
+            var loadedStudents = string.IsNullOrWhiteSpace(txtSearch.Text)
+                ? studentService.GetAll()
+                : studentService.Search(txtSearch.Text);
+
+            students.Clear();
+            foreach (var student in loadedStudents)
+            {
+                students.Add(student);
+            }
 
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
-            
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "姓名", Binding = new System.Windows.Data.Binding("Name"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "性别", Binding = new System.Windows.Data.Binding("Gender"), Width = new DataGridLength(60) });
@@ -75,7 +78,6 @@ namespace StudentsManagerSystem.Views.StudentArchive
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "院系", Binding = new System.Windows.Data.Binding("Department"), Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "专业", Binding = new System.Windows.Data.Binding("Major"), Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "班级", Binding = new System.Windows.Data.Binding("Class"), Width = new DataGridLength(100) });
-            
             dataGrid.ItemsSource = students;
         }
 
@@ -153,8 +155,16 @@ namespace StudentsManagerSystem.Views.StudentArchive
             var window = new StudentEditWindow();
             if (window.ShowDialog() == true && window.ResultStudent != null)
             {
-                studentRepository.Add(window.ResultStudent);
-                LoadStudentData();
+                var saveResult = studentService.Add(window.ResultStudent);
+                if (saveResult.Succeeded)
+                {
+                    MessageBox.Show(saveResult.Message, "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadStudentData();
+                }
+                else
+                {
+                    MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
 
@@ -171,8 +181,16 @@ namespace StudentsManagerSystem.Views.StudentArchive
                 var window = new StudentEditWindow(selectedStudent);
                 if (window.ShowDialog() == true && window.ResultStudent != null)
                 {
-                    studentRepository.Update(window.ResultStudent);
-                    LoadStudentData();
+                    var saveResult = studentService.Update(window.ResultStudent);
+                    if (saveResult.Succeeded)
+                    {
+                        MessageBox.Show(saveResult.Message, "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadStudentData();
+                    }
+                    else
+                    {
+                        MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
             }
             else
@@ -195,7 +213,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    studentRepository.Delete(selectedStudent.Id);
+                    studentService.Delete(selectedStudent.Id);
                     LoadStudentData();
                 }
             }

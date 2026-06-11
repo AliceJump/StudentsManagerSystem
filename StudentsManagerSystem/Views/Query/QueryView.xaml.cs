@@ -1,62 +1,38 @@
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
+using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Models;
+using StudentsManagerSystem.Services;
 
 namespace StudentsManagerSystem.Views.Query
 {
     public partial class QueryView : Page
     {
+        private readonly StudentService studentService = new StudentService();
         private List<Student> students = new List<Student>();
         private bool _initialized = false;
+
         public QueryView()
         {
-
             InitializeComponent();
-            LoadSampleData();
-            LoadStudentData();
+            LoadDataFromRepository();
+            ApplyStudentFilter();
             _initialized = true;
         }
 
-        private void LoadSampleData()
+        private void LoadDataFromRepository()
         {
-            students = new List<Student>
-            {
-                new Student 
-                { 
-                    Id = 1, StudentNo = "2024001", Name = "张三", Gender = "男", 
-                    BirthDate = new DateTime(2005, 3, 15), 
-                    Department = "计算机学院", Major = "软件工程", Class = "软工2024-1班",
-                    PhoneNumber = "13800138001", EnrollmentDate = new DateTime(2024, 9, 1)
-                },
-                new Student 
-                { 
-                    Id = 2, StudentNo = "2024002", Name = "李四", Gender = "女", 
-                    BirthDate = new DateTime(2005, 6, 20), 
-                    Department = "计算机学院", Major = "软件工程", Class = "软工2024-1班",
-                    PhoneNumber = "13800138002", EnrollmentDate = new DateTime(2024, 9, 1)
-                },
-                new Student 
-                { 
-                    Id = 3, StudentNo = "2024003", Name = "王五", Gender = "男", 
-                    BirthDate = new DateTime(2005, 8, 10), 
-                    Department = "计算机学院", Major = "计算机科学与技术", Class = "计科2024-1班",
-                    PhoneNumber = "13800138003", EnrollmentDate = new DateTime(2024, 9, 1)
-                },
-                new Student 
-                { 
-                    Id = 4, StudentNo = "2024004", Name = "赵六", Gender = "女", 
-                    BirthDate = new DateTime(2005, 4, 25), 
-                    Department = "电子信息学院", Major = "电子信息工程", Class = "电信2024-1班",
-                    PhoneNumber = "13800138004", EnrollmentDate = new DateTime(2024, 9, 1)
-                }
-            };
+            students = studentService.GetAll();
         }
 
-        private void LoadStudentData()
+        private void ApplyStudentFilter()
         {
+            LoadDataFromRepository();
+            var filtered = FilterStudents();
             dataGrid.ItemsSource = null;
-            dataGrid.ItemsSource = students;
-            txtStatistics.Text = $"共找到 {students.Count} 条记录";
+            dataGrid.ItemsSource = filtered;
+            UpdateStatistics(filtered);
         }
 
         private void cmbQueryType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -65,12 +41,12 @@ namespace StudentsManagerSystem.Views.Query
 
             if (cmbQueryType.SelectedIndex == 0)
             {
-                LoadStudentData();
+                ApplyStudentFilter();
             }
             else
             {
                 dataGrid.ItemsSource = null;
-                txtStatistics.Text = "请点击查询按钮执行统计";
+                UpdateStatistics(Array.Empty<Student>());
             }
         }
 
@@ -78,40 +54,14 @@ namespace StudentsManagerSystem.Views.Query
         {
             if (cmbQueryType.SelectedIndex == 0)
             {
-                // 按学生信息查询
-                var filtered = students.AsEnumerable();
-
-                if (!string.IsNullOrWhiteSpace(txtStudentNo.Text))
-                {
-                    filtered = filtered.Where(s => s.StudentNo.Contains(txtStudentNo.Text));
-                }
-
-                if (!string.IsNullOrWhiteSpace(txtName.Text))
-                {
-                    filtered = filtered.Where(s => s.Name.Contains(txtName.Text));
-                }
-
-                if (cmbDepartment.SelectedIndex > 0)
-                {
-                    var dept = (cmbDepartment.SelectedItem as ComboBoxItem)?.Content.ToString();
-                    filtered = filtered.Where(s => s.Department == dept);
-                }
-
-                if (cmbClass.SelectedIndex > 0)
-                {
-                    var cls = (cmbClass.SelectedItem as ComboBoxItem)?.Content.ToString();
-                    filtered = filtered.Where(s => s.Class == cls);
-                }
-
-                var result = filtered.ToList();
-                dataGrid.ItemsSource = result;
-                txtStatistics.Text = $"共找到 {result.Count} 条记录";
+                ApplyStudentFilter();
             }
             else
             {
-                // 统计查询
-                MessageBox.Show("统计功能将在后续实现", "提示", 
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                var result = FilterStudents();
+                dataGrid.ItemsSource = null;
+                dataGrid.ItemsSource = result;
+                UpdateStatistics(result, true);
             }
         }
 
@@ -121,13 +71,85 @@ namespace StudentsManagerSystem.Views.Query
             txtName.Text = "";
             cmbDepartment.SelectedIndex = 0;
             cmbClass.SelectedIndex = 0;
-            LoadStudentData();
+            ApplyStudentFilter();
         }
 
         private void btnExport_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("导出功能将在后续实现", "提示", 
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            var dialog = new SaveFileDialog
+            {
+                Filter = "CSV 文件 (*.csv)|*.csv",
+                FileName = $"查询结果_{DateTime.Now:yyyyMMdd_HHmmss}.csv",
+                Title = "导出查询结果"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                var current = dataGrid.ItemsSource?.Cast<Student>().ToList() ?? new List<Student>();
+                CsvExportHelper.ExportToCsv(current, dialog.FileName);
+                MessageBox.Show("查询结果导出成功。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"导出失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private List<Student> FilterStudents()
+        {
+            IEnumerable<Student> filtered = students;
+
+            if (!string.IsNullOrWhiteSpace(txtStudentNo.Text))
+            {
+                filtered = filtered.Where(student => student.StudentNo.Contains(txtStudentNo.Text, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtName.Text))
+            {
+                filtered = filtered.Where(student => student.Name.Contains(txtName.Text, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (cmbDepartment.SelectedIndex > 0)
+            {
+                var department = (cmbDepartment.SelectedItem as ComboBoxItem)?.Content?.ToString();
+                if (!string.IsNullOrWhiteSpace(department))
+                {
+                    filtered = filtered.Where(student => string.Equals(student.Department, department, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+
+            if (cmbClass.SelectedIndex > 0)
+            {
+                var className = (cmbClass.SelectedItem as ComboBoxItem)?.Content?.ToString();
+                if (!string.IsNullOrWhiteSpace(className))
+                {
+                    filtered = filtered.Where(student => string.Equals(student.Class, className, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+
+            return filtered.ToList();
+        }
+
+        private void UpdateStatistics(IReadOnlyCollection<Student> currentStudents, bool includeSummary = false)
+        {
+            if (!currentStudents.Any())
+            {
+                txtStatistics.Text = "当前没有匹配的数据";
+                return;
+            }
+
+            var maleCount = currentStudents.Count(student => string.Equals(student.Gender, "男", StringComparison.OrdinalIgnoreCase));
+            var femaleCount = currentStudents.Count(student => string.Equals(student.Gender, "女", StringComparison.OrdinalIgnoreCase));
+            var topDepartment = currentStudents.GroupBy(student => student.Department).OrderByDescending(group => group.Count()).FirstOrDefault();
+            var topDepartmentText = topDepartment == null ? "-" : $"{topDepartment.Key}({topDepartment.Count()}人)";
+            txtStatistics.Text = includeSummary
+                ? $"共 {currentStudents.Count} 条，男 {maleCount}，女 {femaleCount}，最多院系：{topDepartmentText}"
+                : $"共找到 {currentStudents.Count} 条记录，男 {maleCount}，女 {femaleCount}，最多院系：{topDepartmentText}";
         }
     }
 }

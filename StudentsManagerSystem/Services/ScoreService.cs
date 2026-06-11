@@ -1,0 +1,92 @@
+using StudentsManagerSystem.Common;
+using StudentsManagerSystem.Data.SqlServer;
+using StudentsManagerSystem.Models;
+
+namespace StudentsManagerSystem.Services
+{
+    internal sealed class ScoreService
+    {
+        private readonly ScoreRepository repository = new();
+
+        public List<Score> GetAll() => repository.GetAll();
+
+        public List<Score> GetByAcademicYearSemester(string academicYear, string semester) => repository.GetByAcademicYearSemester(academicYear, semester);
+
+        public List<Course> GetCourses() => repository.GetCourses();
+
+        public ServiceResult Add(Score score)
+        {
+            var validation = Validate(score);
+            if (!validation.Succeeded)
+            {
+                return validation;
+            }
+
+            repository.Add(score);
+            return ServiceResult.Success("成绩新增成功");
+        }
+
+        public ServiceResult Update(Score score)
+        {
+            if (score.Id <= 0)
+            {
+                return ServiceResult.Failure("请选择要修改的成绩记录");
+            }
+
+            var validation = Validate(score);
+            if (!validation.Succeeded)
+            {
+                return validation;
+            }
+
+            repository.Update(score);
+            return ServiceResult.Success("成绩修改成功");
+        }
+
+        public ServiceResult SaveImported(Score score)
+        {
+            var existing = repository.GetAll().FirstOrDefault(item =>
+                item.StudentNo == score.StudentNo &&
+                item.AcademicYear == score.AcademicYear &&
+                item.Semester == score.Semester &&
+                item.CourseNo == score.CourseNo);
+
+            if (existing == null)
+            {
+                return Add(score);
+            }
+
+            score.Id = existing.Id;
+            return Update(score);
+        }
+
+        public void Delete(int id) => repository.Delete(id);
+
+        private static ServiceResult Validate(Score score)
+        {
+            if (!InputValidator.ValidateStudentNo(score.StudentNo) || !InputValidator.ValidateName(score.StudentName))
+            {
+                return ServiceResult.Failure("请检查学号和姓名格式");
+            }
+
+            if (!InputValidator.ValidateAcademicYear(score.AcademicYear) || !InputValidator.ValidateSemester(score.Semester))
+            {
+                return ServiceResult.Failure("请检查学年和学期格式");
+            }
+
+            if (string.IsNullOrWhiteSpace(score.CourseNo) || string.IsNullOrWhiteSpace(score.CourseName) || score.Credit < 0)
+            {
+                return ServiceResult.Failure("请检查课程和学分信息");
+            }
+
+            if (!IsScoreInRange(score.RegularScore) || !IsScoreInRange(score.ExamScore) || !IsScoreInRange(score.TotalScore))
+            {
+                return ServiceResult.Failure("成绩应在0-100之间");
+            }
+
+            return ServiceResult.Success();
+        }
+
+        private static bool IsScoreInRange(decimal? score) => !score.HasValue || score is >= 0 and <= 100;
+    }
+}

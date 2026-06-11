@@ -1,28 +1,42 @@
-using System;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Data.SqlClient;
-using StudentsManagerSystem.Models;
+using Microsoft.EntityFrameworkCore;
+using StudentsManagerSystem.Data;
 
 namespace StudentsManagerSystem.Data.SqlServer
 {
+    /// <summary>
+    /// 用户仓储。
+    /// </summary>
     internal sealed class UsersRepository
     {
         public bool ValidateCredentials(string username, string password, out string? displayName)
         {
             displayName = null;
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-            using var command = connection.CreateCommand();
-            command.CommandText = @"SELECT PasswordHash, DisplayName FROM dbo.Users WHERE Username = @Username;";
-            command.Parameters.AddWithValue("@Username", username);
-            using var reader = command.ExecuteReader();
-            if (!reader.Read()) return false;
-            var stored = reader.GetString(0);
-            displayName = reader.IsDBNull(1) ? null : reader.GetString(1);
+            username = username.Trim();
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                return false;
+            }
 
-            var hash = ComputeHash(password);
-            return string.Equals(stored, hash, StringComparison.OrdinalIgnoreCase);
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var user = context.Users.FirstOrDefault(item => item.Username == username && item.IsActive);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var valid = string.Equals(user.PasswordHash, ComputeHash(password), StringComparison.OrdinalIgnoreCase);
+            if (!valid)
+            {
+                return false;
+            }
+
+            displayName = user.DisplayName;
+            user.LastLoginAt = DateTime.Now;
+            context.Users.Update(user);
+            context.SaveChanges();
+            return true;
         }
 
         private static string ComputeHash(string input)
@@ -30,7 +44,7 @@ namespace StudentsManagerSystem.Data.SqlServer
             using var sha = SHA256.Create();
             var bytes = Encoding.UTF8.GetBytes(input);
             var hashed = sha.ComputeHash(bytes);
-            return BitConverter.ToString(hashed).Replace("-", "").ToLowerInvariant();
+            return Convert.ToHexString(hashed).ToLowerInvariant();
         }
     }
 }

@@ -3,11 +3,13 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:StudentsManagerSystem.Views.Score"
+            xmlns:local="clr-namespace:StudentsManagerSystem.Views.Score"
+            xmlns:common="clr-namespace:StudentsManagerSystem.Common"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="1100">
 
     <Page.Resources>
+                <common:AcademicYearDisplayConverter x:Key="AcademicYearDisplayConverter" />
         <Style x:Key="ButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#3498DB"/>
             <Setter Property="Foreground" Value="White"/>
@@ -55,11 +57,11 @@
         <!-- 筛选条件 -->
         <Border Grid.Row="0" Background="#F8F9FA" Padding="15" CornerRadius="5" Margin="0,0,0,15">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="学年：" VerticalAlignment="Center" FontSize="14" Margin="0,0,10,0"/>
+                <TextBlock Text="起始学年：" VerticalAlignment="Center" FontSize="14" Margin="0,0,10,0"/>
                 <ComboBox x:Name="cmbAcademicYear" Width="150" Height="32" FontSize="14">
-                    <ComboBoxItem Content="2024-2025" IsSelected="True"/>
-                    <ComboBoxItem Content="2023-2024"/>
-                    <ComboBoxItem Content="2022-2023"/>
+                    <ComboBoxItem Content="2024" IsSelected="True"/>
+                    <ComboBoxItem Content="2023"/>
+                    <ComboBoxItem Content="2022"/>
                 </ComboBox>
                 
                 <TextBlock Text="学期：" VerticalAlignment="Center" FontSize="14" Margin="20,0,10,0"/>
@@ -97,7 +99,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="学号" Binding="{Binding StudentNo}" Width="100"/>
                 <DataGridTextColumn Header="姓名" Binding="{Binding StudentName}" Width="100"/>
-                <DataGridTextColumn Header="学年" Binding="{Binding AcademicYear}" Width="100"/>
+                <DataGridTextColumn Header="学年" Binding="{Binding AcademicYear, Converter={StaticResource AcademicYearDisplayConverter}}" Width="100"/>
                 <DataGridTextColumn Header="学期" Binding="{Binding Semester}" Width="100"/>
                 <DataGridTextColumn Header="课程编号" Binding="{Binding CourseNo}" Width="100"/>
                 <DataGridTextColumn Header="课程名称" Binding="{Binding CourseName}" Width="150"/>

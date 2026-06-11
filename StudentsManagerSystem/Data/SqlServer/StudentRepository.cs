@@ -1,31 +1,24 @@
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using StudentsManagerSystem.Data;
 using StudentsManagerSystem.Models;
 
 namespace StudentsManagerSystem.Data.SqlServer
 {
+    /// <summary>
+    /// 学生信息仓储。
+    /// </summary>
     internal sealed class StudentRepository
     {
         public List<Student> GetAll()
         {
-            var students = new List<Student>();
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.AsNoTracking().OrderBy(student => student.StudentNo).ToList();
+        }
 
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-SELECT Id, StudentNo, Name, Gender, BirthDate, IdCard, Nation, PoliticalStatus, PhoneNumber,
-       Email, Address, Department, Major, [Class], EnrollmentDate, Photo
-FROM dbo.Students
-ORDER BY StudentNo;";
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                students.Add(MapStudent(reader));
-            }
-
-            return students;
+        public Task<List<Student>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.AsNoTracking().OrderBy(student => student.StudentNo).ToListAsync(cancellationToken);
         }
 
         public List<Student> Search(string keyword)
@@ -36,179 +29,108 @@ ORDER BY StudentNo;";
                 return GetAll();
             }
 
-            var students = new List<Student>();
-
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-SELECT Id, StudentNo, Name, Gender, BirthDate, IdCard, Nation, PoliticalStatus, PhoneNumber,
-       Email, Address, Department, Major, [Class], EnrollmentDate, Photo
-FROM dbo.Students
-WHERE StudentNo LIKE @Keyword
-   OR Name LIKE @Keyword
-   OR Department LIKE @Keyword
-   OR Major LIKE @Keyword
-   OR [Class] LIKE @Keyword
-ORDER BY StudentNo;";
-            command.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                students.Add(MapStudent(reader));
-            }
-
-            return students;
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.AsNoTracking()
+                .Where(student =>
+                    EF.Functions.Like(student.StudentNo, $"%{keyword}%") ||
+                    EF.Functions.Like(student.Name, $"%{keyword}%") ||
+                    EF.Functions.Like(student.Department, $"%{keyword}%") ||
+                    EF.Functions.Like(student.Major, $"%{keyword}%") ||
+                    EF.Functions.Like(student.Class, $"%{keyword}%"))
+                .OrderBy(student => student.StudentNo)
+                .ToList();
         }
 
         public Student? GetById(int id)
         {
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-SELECT Id, StudentNo, Name, Gender, BirthDate, IdCard, Nation, PoliticalStatus, PhoneNumber,
-       Email, Address, Department, Major, [Class], EnrollmentDate, Photo
-FROM dbo.Students
-WHERE Id = @Id;";
-            command.Parameters.AddWithValue("@Id", id);
-
-            using var reader = command.ExecuteReader();
-            return reader.Read() ? MapStudent(reader) : null;
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.AsNoTracking().FirstOrDefault(student => student.Id == id);
         }
 
         public int Add(Student student)
         {
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.Students.Add(student);
+            context.SaveChanges();
+            return student.Id;
+        }
 
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-INSERT INTO dbo.Students
-    (StudentNo, Name, Gender, BirthDate, IdCard, Nation, PoliticalStatus, PhoneNumber, Email, Address, Department, Major, [Class], EnrollmentDate, Photo)
-OUTPUT INSERTED.Id
-VALUES
-    (@StudentNo, @Name, @Gender, @BirthDate, @IdCard, @Nation, @PoliticalStatus, @PhoneNumber, @Email, @Address, @Department, @Major, @Class, @EnrollmentDate, @Photo);";
-
-            AddStudentParameters(command, student);
-            return Convert.ToInt32(command.ExecuteScalar());
+        public async Task<int> AddAsync(Student student, CancellationToken cancellationToken = default)
+        {
+            await using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.Students.Add(student);
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return student.Id;
         }
 
         public void Update(Student student)
         {
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.Students.Update(student);
+            context.SaveChanges();
+        }
 
-            using var command = connection.CreateCommand();
-            command.CommandText = @"
-UPDATE dbo.Students
-SET StudentNo = @StudentNo,
-    Name = @Name,
-    Gender = @Gender,
-    BirthDate = @BirthDate,
-    IdCard = @IdCard,
-    Nation = @Nation,
-    PoliticalStatus = @PoliticalStatus,
-    PhoneNumber = @PhoneNumber,
-    Email = @Email,
-    Address = @Address,
-    Department = @Department,
-    Major = @Major,
-    [Class] = @Class,
-    EnrollmentDate = @EnrollmentDate,
-    Photo = @Photo
-WHERE Id = @Id;";
-
-            AddStudentParameters(command, student);
-            command.Parameters.AddWithValue("@Id", student.Id);
-            command.ExecuteNonQuery();
+        public async Task UpdateAsync(Student student, CancellationToken cancellationToken = default)
+        {
+            await using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            context.Students.Update(student);
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public void Delete(int id)
         {
-            using var connection = SqlServerConnectionFactory.CreateConnection();
-            connection.Open();
-
-            using var transaction = connection.BeginTransaction();
-            try
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var student = context.Students.FirstOrDefault(item => item.Id == id);
+            if (student == null)
             {
-                DeleteRelatedRecords(connection, transaction, id, "dbo.FamilyInfos");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.RewardRecords");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.PunishmentRecords");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.HealthRecords");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.StudentRegistrations");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.StatusChangeRecords");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.ScholarshipInfos");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.GraduationInfos");
-                DeleteRelatedRecords(connection, transaction, id, "dbo.Scores");
-
-                using var command = connection.CreateCommand();
-                command.Transaction = transaction;
-                command.CommandText = "DELETE FROM dbo.Students WHERE Id = @Id;";
-                command.Parameters.AddWithValue("@Id", id);
-                command.ExecuteNonQuery();
-
-                transaction.Commit();
+                return;
             }
-            catch
+
+            context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentId == id));
+            context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentId == id));
+            context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentId == id));
+            context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentId == id));
+            context.StudentRegistrations.RemoveRange(context.StudentRegistrations.Where(item => item.StudentId == id));
+            context.StatusChangeRecords.RemoveRange(context.StatusChangeRecords.Where(item => item.StudentId == id));
+            context.ScholarshipInfos.RemoveRange(context.ScholarshipInfos.Where(item => item.StudentId == id));
+            context.GraduationInfos.RemoveRange(context.GraduationInfos.Where(item => item.StudentId == id));
+            context.Scores.RemoveRange(context.Scores.Where(item => item.StudentId == id));
+            context.Students.Remove(student);
+            context.SaveChanges();
+        }
+
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            await using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var student = await context.Students.FirstOrDefaultAsync(item => item.Id == id, cancellationToken).ConfigureAwait(false);
+            if (student == null)
             {
-                transaction.Rollback();
-                throw;
+                return;
             }
+
+            context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentId == id));
+            context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentId == id));
+            context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentId == id));
+            context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentId == id));
+            context.StudentRegistrations.RemoveRange(context.StudentRegistrations.Where(item => item.StudentId == id));
+            context.StatusChangeRecords.RemoveRange(context.StatusChangeRecords.Where(item => item.StudentId == id));
+            context.ScholarshipInfos.RemoveRange(context.ScholarshipInfos.Where(item => item.StudentId == id));
+            context.GraduationInfos.RemoveRange(context.GraduationInfos.Where(item => item.StudentId == id));
+            context.Scores.RemoveRange(context.Scores.Where(item => item.StudentId == id));
+            context.Students.Remove(student);
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        private static void DeleteRelatedRecords(SqlConnection connection, SqlTransaction transaction, int studentId, string tableName)
+        public bool StudentNoExists(string studentNo, int excludeId = 0)
         {
-            using var command = connection.CreateCommand();
-            command.Transaction = transaction;
-            command.CommandText = $"DELETE FROM {tableName} WHERE StudentId = @StudentId;";
-            command.Parameters.AddWithValue("@StudentId", studentId);
-            command.ExecuteNonQuery();
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Any(student => student.StudentNo == studentNo && student.Id != excludeId);
         }
 
-        private static void AddStudentParameters(SqlCommand command, Student student)
+        public bool IdCardExists(string idCard, int excludeId = 0)
         {
-            command.Parameters.AddWithValue("@StudentNo", student.StudentNo);
-            command.Parameters.AddWithValue("@Name", student.Name);
-            command.Parameters.AddWithValue("@Gender", student.Gender);
-            command.Parameters.AddWithValue("@BirthDate", (object?)student.BirthDate ?? DBNull.Value);
-            command.Parameters.AddWithValue("@IdCard", student.IdCard);
-            command.Parameters.AddWithValue("@Nation", student.Nation);
-            command.Parameters.AddWithValue("@PoliticalStatus", student.PoliticalStatus);
-            command.Parameters.AddWithValue("@PhoneNumber", student.PhoneNumber);
-            command.Parameters.AddWithValue("@Email", string.IsNullOrWhiteSpace(student.Email) ? DBNull.Value : student.Email);
-            command.Parameters.AddWithValue("@Address", string.IsNullOrWhiteSpace(student.Address) ? DBNull.Value : student.Address);
-            command.Parameters.AddWithValue("@Department", student.Department);
-            command.Parameters.AddWithValue("@Major", student.Major);
-            command.Parameters.AddWithValue("@Class", student.Class);
-            command.Parameters.AddWithValue("@EnrollmentDate", (object?)student.EnrollmentDate ?? DBNull.Value);
-            command.Parameters.AddWithValue("@Photo", string.IsNullOrWhiteSpace(student.Photo) ? DBNull.Value : student.Photo);
-        }
-
-        private static Student MapStudent(SqlDataReader reader)
-        {
-            return new Student
-            {
-                Id = reader.GetInt32(0),
-                StudentNo = reader.GetString(1),
-                Name = reader.GetString(2),
-                Gender = reader.GetString(3),
-                BirthDate = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
-                IdCard = reader.GetString(5),
-                Nation = reader.GetString(6),
-                PoliticalStatus = reader.GetString(7),
-                PhoneNumber = reader.GetString(8),
-                Email = reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
-                Address = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
-                Department = reader.GetString(11),
-                Major = reader.GetString(12),
-                Class = reader.GetString(13),
-                EnrollmentDate = reader.IsDBNull(14) ? null : reader.GetDateTime(14),
-                Photo = reader.IsDBNull(15) ? string.Empty : reader.GetString(15)
-            };
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Any(student => student.IdCard == idCard && student.Id != excludeId);
         }
     }
 }

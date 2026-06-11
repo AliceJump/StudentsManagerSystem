@@ -108,7 +108,7 @@
                     BorderThickness="0,0,0,1">
                 <Grid>
                     <TextBlock x:Name="txtPageTitle" 
-                               Text="欢迎使用学生管理系统" 
+                               Text="{Binding CurrentPageTitle}" 
                                FontSize="28" 
                                FontWeight="Bold" 
                                Foreground="#2C3E50" 
@@ -123,7 +123,7 @@
                                    Foreground="#7F8C8D" 
                                    VerticalAlignment="Center"/>
                         <TextBlock x:Name="txtCurrentTime" 
-                                   Text="2026-03-05 10:30:00" 
+                                   Text="{Binding CurrentTime}" 
                                    FontSize="14" 
                                    Foreground="#2C3E50" 
                                    VerticalAlignment="Center" 

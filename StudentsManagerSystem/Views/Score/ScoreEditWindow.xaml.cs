@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows;
-using StudentsManagerSystem.Data.SqlServer;
+using StudentsManagerSystem.Common;
+using StudentsManagerSystem.Services;
 using ScoreModel = StudentsManagerSystem.Models.Score;
 using CourseModel = StudentsManagerSystem.Models.Course;
 
@@ -8,7 +9,7 @@ namespace StudentsManagerSystem.Views.Score
 {
     public partial class ScoreEditWindow : Window
     {
-        private readonly ScoreRepository scoreRepository = new ScoreRepository();
+        private readonly ScoreService scoreService = new ScoreService();
         private readonly List<CourseModel> courses;
         private readonly ScoreModel? existingScore;
 
@@ -17,7 +18,7 @@ namespace StudentsManagerSystem.Views.Score
         public ScoreEditWindow()
         {
             InitializeComponent();
-            courses = scoreRepository.GetCourses();
+            courses = scoreService.GetCourses();
             existingScore = null;
             LoadCourses();
         }
@@ -25,7 +26,7 @@ namespace StudentsManagerSystem.Views.Score
         public ScoreEditWindow(ScoreModel score)
         {
             InitializeComponent();
-            courses = scoreRepository.GetCourses();
+            courses = scoreService.GetCourses();
             existingScore = score;
             LoadCourses();
             LoadScore(score);
@@ -72,7 +73,7 @@ namespace StudentsManagerSystem.Views.Score
         {
             txtStudentNo.Text = score.StudentNo;
             txtStudentName.Text = score.StudentName;
-            cmbAcademicYear.Text = score.AcademicYear;
+            cmbAcademicYear.Text = AcademicYearHelper.NormalizeStartYear(score.AcademicYear);
             cmbSemester.Text = score.Semester;
             cmbCourse.SelectedItem = courses.FirstOrDefault(item => item.CourseNo == score.CourseNo);
             txtRegularScore.Text = score.RegularScore?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
@@ -146,7 +147,7 @@ namespace StudentsManagerSystem.Views.Score
                 StudentId = existingScore?.StudentId ?? 0,
                 StudentNo = txtStudentNo.Text.Trim(),
                 StudentName = txtStudentName.Text.Trim(),
-                AcademicYear = GetComboText(cmbAcademicYear),
+                AcademicYear = AcademicYearHelper.NormalizeStartYear(GetComboText(cmbAcademicYear)),
                 Semester = GetComboText(cmbSemester),
                 CourseNo = course.CourseNo,
                 CourseName = course.CourseName,
