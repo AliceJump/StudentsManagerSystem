@@ -42,4 +42,16 @@ namespace StudentsManagerSystem.Models
         public int StudentCount { get; set; }
         public string Remarks { get; set; } = string.Empty;
     }
+
+    /// <summary>
+    /// 通用业务字典选项。
+    /// </summary>
+    public class LookupOption
+    {
+        public int Id { get; set; }
+        public string Category { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+        public int SortOrder { get; set; }
+        public bool IsActive { get; set; } = true;
+    }
 }

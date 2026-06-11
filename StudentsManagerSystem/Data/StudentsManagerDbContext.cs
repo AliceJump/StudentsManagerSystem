@@ -43,6 +43,8 @@ namespace StudentsManagerSystem.Data
 
         public DbSet<User> Users => Set<User>();
 
+        public DbSet<LookupOption> LookupOptions => Set<LookupOption>();
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -248,6 +250,15 @@ namespace StudentsManagerSystem.Data
                 entity.Property(x => x.PasswordHash).HasMaxLength(200).IsRequired();
                 entity.Property(x => x.DisplayName).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.Role).HasMaxLength(50).IsRequired();
+            });
+
+            modelBuilder.Entity<LookupOption>(entity =>
+            {
+                entity.ToTable("LookupOptions");
+                entity.HasKey(x => x.Id);
+                entity.HasIndex(x => new { x.Category, x.Value }).IsUnique();
+                entity.Property(x => x.Category).HasMaxLength(50).IsRequired();
+                entity.Property(x => x.Value).HasMaxLength(100).IsRequired();
             });
         }
     }

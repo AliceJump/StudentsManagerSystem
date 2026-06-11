@@ -12,6 +12,14 @@ namespace StudentsManagerSystem.Services
 
         public List<Student> Search(string keyword) => repository.Search(keyword);
 
+        public List<FamilyInfo> GetFamilyInfos() => repository.GetFamilyInfos();
+
+        public List<RewardRecord> GetRewardRecords() => repository.GetRewardRecords();
+
+        public List<PunishmentRecord> GetPunishmentRecords() => repository.GetPunishmentRecords();
+
+        public List<HealthRecord> GetHealthRecords() => repository.GetHealthRecords();
+
         public ServiceResult Add(Student student)
         {
             var validation = Validate(student, student.Id);
@@ -21,6 +29,7 @@ namespace StudentsManagerSystem.Services
             }
 
             repository.Add(student);
+            AppLogger.Info($"新增学生：{student.StudentNo} {student.Name}");
             return ServiceResult.Success("学生信息新增成功");
         }
 
@@ -38,10 +47,27 @@ namespace StudentsManagerSystem.Services
             }
 
             repository.Update(student);
+            AppLogger.Info($"修改学生：{student.StudentNo} {student.Name}");
             return ServiceResult.Success("学生信息修改成功");
         }
 
-        public void Delete(int id) => repository.Delete(id);
+        public ServiceResult SaveImported(Student student)
+        {
+            var existing = repository.GetAll().FirstOrDefault(item => item.StudentNo == student.StudentNo);
+            if (existing == null)
+            {
+                return Add(student);
+            }
+
+            student.Id = existing.Id;
+            return Update(student);
+        }
+
+        public void Delete(int id)
+        {
+            repository.Delete(id);
+            AppLogger.Info($"删除学生：Id={id}");
+        }
 
         public ServiceResult Validate(Student student, int excludeId = 0)
         {

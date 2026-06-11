@@ -25,10 +25,20 @@ namespace StudentsManagerSystem
         {
             InitializeComponent();
             DataContext = viewModel;
+            ApplyPermissions();
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
             timer.Start();
+        }
+
+        private void ApplyPermissions()
+        {
+            if (!string.Equals(App.CurrentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                btnBasicData.IsEnabled = false;
+                btnBasicData.ToolTip = "当前用户无基础数据管理权限";
+            }
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
@@ -59,6 +69,13 @@ namespace StudentsManagerSystem
                         MainFrame.Navigate(new Uri("Views/Score/ScoreView.xaml", UriKind.Relative));
                         break;
                     case "btnBasicData":
+                        if (!string.Equals(App.CurrentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                        {
+                            MessageBox.Show("当前用户无基础数据管理权限。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                            btnHome.IsChecked = true;
+                            return;
+                        }
+
                         viewModel.CurrentPageTitle = "基础数据管理";
                         MainFrame.Navigate(new Uri("Views/BasicData/BasicDataView.xaml", UriKind.Relative));
                         break;

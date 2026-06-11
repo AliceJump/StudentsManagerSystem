@@ -47,6 +47,30 @@ namespace StudentsManagerSystem.Data.SqlServer
             return context.Students.AsNoTracking().FirstOrDefault(student => student.Id == id);
         }
 
+        public List<FamilyInfo> GetFamilyInfos()
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.FamilyInfos.AsNoTracking().OrderBy(item => item.StudentId).ThenBy(item => item.RelationName).ToList();
+        }
+
+        public List<RewardRecord> GetRewardRecords()
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.RewardRecords.AsNoTracking().OrderByDescending(item => item.RewardDate).ThenBy(item => item.StudentId).ToList();
+        }
+
+        public List<PunishmentRecord> GetPunishmentRecords()
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.PunishmentRecords.AsNoTracking().OrderByDescending(item => item.PunishmentDate).ThenBy(item => item.StudentId).ToList();
+        }
+
+        public List<HealthRecord> GetHealthRecords()
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.HealthRecords.AsNoTracking().OrderByDescending(item => item.CheckDate).ThenBy(item => item.StudentId).ToList();
+        }
+
         public int Add(Student student)
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();

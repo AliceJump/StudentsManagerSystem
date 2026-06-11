@@ -86,20 +86,12 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="院系：" 
                            VerticalAlignment="Center" FontSize="14" Margin="0,5"/>
                 <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbDepartment" 
-                          Height="32" FontSize="14" Margin="0,5">
-                    <ComboBoxItem Content="全部"/>
-                    <ComboBoxItem Content="计算机学院"/>
-                    <ComboBoxItem Content="电子信息学院"/>
-                </ComboBox>
+                          Height="32" FontSize="14" Margin="0,5"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="班级：" 
                            VerticalAlignment="Center" FontSize="14" Margin="10,5,0,5"/>
                 <ComboBox Grid.Row="2" Grid.Column="3" x:Name="cmbClass" 
-                          Height="32" FontSize="14" Margin="0,5">
-                    <ComboBoxItem Content="全部"/>
-                    <ComboBoxItem Content="软工2024-1班"/>
-                    <ComboBoxItem Content="软工2024-2班"/>
-                </ComboBox>
+                          Height="32" FontSize="14" Margin="0,5"/>
 
                 <StackPanel Grid.Row="2" Grid.Column="4" Orientation="Horizontal" 
                             HorizontalAlignment="Right" VerticalAlignment="Center">

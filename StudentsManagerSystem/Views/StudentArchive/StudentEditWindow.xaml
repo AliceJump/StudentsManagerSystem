@@ -93,10 +93,7 @@
                         <TextBox Grid.Row="0" Grid.Column="3" x:Name="txtName" Style="{StaticResource TextBoxStyle}"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="性别：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="cmbGender" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="男"/>
-                            <ComboBoxItem Content="女"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="cmbGender" Style="{StaticResource ComboBoxStyle}"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="2" Text="出生日期：*" Style="{StaticResource LabelStyle}"/>
                         <DatePicker Grid.Row="1" Grid.Column="3" x:Name="dpBirthDate" Style="{StaticResource DatePickerStyle}"/>
@@ -108,11 +105,7 @@
                         <TextBox Grid.Row="2" Grid.Column="3" x:Name="txtNation" Style="{StaticResource TextBoxStyle}"/>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="政治面貌：" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbPoliticalStatus" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="群众"/>
-                            <ComboBoxItem Content="团员"/>
-                            <ComboBoxItem Content="党员"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbPoliticalStatus" Style="{StaticResource ComboBoxStyle}"/>
 
                         <TextBlock Grid.Row="3" Grid.Column="2" Text="联系电话：*" Style="{StaticResource LabelStyle}"/>
                         <TextBox Grid.Row="3" Grid.Column="3" x:Name="txtPhone" Style="{StaticResource TextBoxStyle}"/>
@@ -124,24 +117,13 @@
                         <DatePicker Grid.Row="4" Grid.Column="3" x:Name="dpEnrollment" Style="{StaticResource DatePickerStyle}"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="院系：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbDepartment" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="计算机学院"/>
-                            <ComboBoxItem Content="电子信息学院"/>
-                            <ComboBoxItem Content="机械工程学院"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbDepartment" Style="{StaticResource ComboBoxStyle}"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="2" Text="专业：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="5" Grid.Column="3" x:Name="cmbMajor" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="软件工程"/>
-                            <ComboBoxItem Content="计算机科学与技术"/>
-                            <ComboBoxItem Content="网络工程"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="5" Grid.Column="3" x:Name="cmbMajor" Style="{StaticResource ComboBoxStyle}"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="班级：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="6" Grid.Column="1" x:Name="cmbClass" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="软工2024-1班"/>
-                            <ComboBoxItem Content="软工2024-2班"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="6" Grid.Column="1" x:Name="cmbClass" Style="{StaticResource ComboBoxStyle}"/>
 
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="家庭住址：" Style="{StaticResource LabelStyle}" Grid.ColumnSpan="1"/>
                         <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtAddress" 

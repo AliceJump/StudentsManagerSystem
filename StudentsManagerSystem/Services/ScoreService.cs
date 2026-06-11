@@ -14,6 +14,10 @@ namespace StudentsManagerSystem.Services
 
         public List<Course> GetCourses() => repository.GetCourses();
 
+        public List<string> GetAcademicYears() => repository.GetAcademicYears();
+
+        public List<string> GetSemesters() => repository.GetSemesters();
+
         public ServiceResult Add(Score score)
         {
             var validation = Validate(score);
@@ -23,6 +27,7 @@ namespace StudentsManagerSystem.Services
             }
 
             repository.Add(score);
+            AppLogger.Info($"新增成绩：{score.StudentNo} {score.CourseNo}");
             return ServiceResult.Success("成绩新增成功");
         }
 
@@ -40,6 +45,7 @@ namespace StudentsManagerSystem.Services
             }
 
             repository.Update(score);
+            AppLogger.Info($"修改成绩：{score.StudentNo} {score.CourseNo}");
             return ServiceResult.Success("成绩修改成功");
         }
 
@@ -60,7 +66,11 @@ namespace StudentsManagerSystem.Services
             return Update(score);
         }
 
-        public void Delete(int id) => repository.Delete(id);
+        public void Delete(int id)
+        {
+            repository.Delete(id);
+            AppLogger.Info($"删除成绩：Id={id}");
+        }
 
         private static ServiceResult Validate(Score score)
         {

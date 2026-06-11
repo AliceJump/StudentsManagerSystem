@@ -10,12 +10,14 @@ namespace StudentsManagerSystem.Views.Query
     public partial class QueryView : Page
     {
         private readonly StudentService studentService = new StudentService();
+        private readonly BasicDataService basicDataService = new BasicDataService();
         private List<Student> students = new List<Student>();
         private bool _initialized = false;
 
         public QueryView()
         {
             InitializeComponent();
+            LoadBusinessOptions();
             LoadDataFromRepository();
             ApplyStudentFilter();
             _initialized = true;
@@ -24,6 +26,14 @@ namespace StudentsManagerSystem.Views.Query
         private void LoadDataFromRepository()
         {
             students = studentService.GetAll();
+        }
+
+        private void LoadBusinessOptions()
+        {
+            cmbDepartment.ItemsSource = new[] { "全部" }.Concat(basicDataService.GetDepartmentNames()).ToList();
+            cmbDepartment.SelectedIndex = 0;
+            cmbClass.ItemsSource = new[] { "全部" }.Concat(basicDataService.GetClassNames()).ToList();
+            cmbClass.SelectedIndex = 0;
         }
 
         private void ApplyStudentFilter()
@@ -92,10 +102,12 @@ namespace StudentsManagerSystem.Views.Query
             {
                 var current = dataGrid.ItemsSource?.Cast<Student>().ToList() ?? new List<Student>();
                 CsvExportHelper.ExportToCsv(current, dialog.FileName);
+                AppLogger.Info($"导出查询结果：{current.Count} 条，文件={dialog.FileName}");
                 MessageBox.Show("查询结果导出成功。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
+                AppLogger.Error("导出查询结果失败。", ex);
                 MessageBox.Show($"导出失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -116,7 +128,7 @@ namespace StudentsManagerSystem.Views.Query
 
             if (cmbDepartment.SelectedIndex > 0)
             {
-                var department = (cmbDepartment.SelectedItem as ComboBoxItem)?.Content?.ToString();
+                var department = GetComboText(cmbDepartment);
                 if (!string.IsNullOrWhiteSpace(department))
                 {
                     filtered = filtered.Where(student => string.Equals(student.Department, department, StringComparison.OrdinalIgnoreCase));
@@ -125,7 +137,7 @@ namespace StudentsManagerSystem.Views.Query
 
             if (cmbClass.SelectedIndex > 0)
             {
-                var className = (cmbClass.SelectedItem as ComboBoxItem)?.Content?.ToString();
+                var className = GetComboText(cmbClass);
                 if (!string.IsNullOrWhiteSpace(className))
                 {
                     filtered = filtered.Where(student => string.Equals(student.Class, className, StringComparison.OrdinalIgnoreCase));
@@ -134,6 +146,10 @@ namespace StudentsManagerSystem.Views.Query
 
             return filtered.ToList();
         }
+
+        private static string GetComboText(ComboBox comboBox) => comboBox.SelectedItem is ComboBoxItem item
+            ? item.Content?.ToString() ?? string.Empty
+            : comboBox.SelectedItem?.ToString() ?? comboBox.Text.Trim();
 
         private void UpdateStatistics(IReadOnlyCollection<Student> currentStudents, bool includeSummary = false)
         {

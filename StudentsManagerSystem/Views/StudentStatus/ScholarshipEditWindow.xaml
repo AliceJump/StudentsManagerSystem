@@ -7,12 +7,12 @@
             <Label Grid.Row="0" Content="学号:"/><TextBox x:Name="txtStudentNo" Grid.Row="0" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="1" Content="姓名:"/><TextBox x:Name="txtStudentName" Grid.Row="1" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="2" Content="起始学年:"/><TextBox x:Name="txtAcademicYear" Grid.Row="2" Grid.Column="1" Margin="4"/>
-            <Label Grid.Row="3" Content="学期:"/><ComboBox x:Name="cmbSemester" Grid.Row="3" Grid.Column="1" Margin="4"><ComboBoxItem Content="第一学期"/><ComboBoxItem Content="第二学期"/></ComboBox>
+            <Label Grid.Row="3" Content="学期:"/><ComboBox x:Name="cmbSemester" Grid.Row="3" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="4" Content="类型:"/><TextBox x:Name="txtType" Grid.Row="4" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="5" Content="等级:"/><TextBox x:Name="txtLevel" Grid.Row="5" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="6" Content="金额:"/><TextBox x:Name="txtAmount" Grid.Row="6" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="7" Content="发放日期:"/><DatePicker x:Name="dpAwardDate" Grid.Row="7" Grid.Column="1" Margin="4"/>
-            <Label Grid.Row="8" Content="状态:"/><ComboBox x:Name="cmbStatus" Grid.Row="8" Grid.Column="1" Margin="4"><ComboBoxItem Content="待发放"/><ComboBoxItem Content="已发放"/></ComboBox>
+            <Label Grid.Row="8" Content="状态:"/><ComboBox x:Name="cmbStatus" Grid.Row="8" Grid.Column="1" Margin="4"/>
             <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right"><Button x:Name="btnOk" Width="90" Margin="4" Click="btnOk_Click">确定</Button><Button Width="90" Margin="4" Click="btnCancel_Click">取消</Button></StackPanel>
         </Grid>
     </Border>

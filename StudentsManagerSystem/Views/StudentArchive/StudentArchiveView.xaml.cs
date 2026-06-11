@@ -1,5 +1,9 @@
+using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
+using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Models;
 using StudentsManagerSystem.Services;
 
@@ -9,6 +13,8 @@ namespace StudentsManagerSystem.Views.StudentArchive
     {
         private readonly StudentService studentService = new StudentService();
         private readonly System.Collections.ObjectModel.ObservableCollection<Student> students = new System.Collections.ObjectModel.ObservableCollection<Student>();
+        private List<Student> filteredStudents = new List<Student>();
+        private int currentPage = 1;
         private List<FamilyInfo> familyInfos = new List<FamilyInfo>();
         private List<RewardRecord> rewards = new List<RewardRecord>();
         private List<PunishmentRecord> punishments = new List<PunishmentRecord>();
@@ -17,26 +23,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
         public StudentArchiveView()
         {
             InitializeComponent();
-            LoadSampleData();
             LoadStudentData();
-        }
-
-        private void LoadSampleData()
-        {
-            familyInfos = new List<FamilyInfo>
-            {
-                new FamilyInfo { Id = 1, StudentId = 1, RelationName = "张父", 
-                    Relationship = "父亲", PhoneNumber = "13900139001", WorkUnit = "某公司" }
-            };
-
-            rewards = new List<RewardRecord>
-            {
-                new RewardRecord { Id = 1, StudentId = 1, RewardDate = DateTime.Now.AddMonths(-2), 
-                    RewardType = "奖学金", RewardLevel = "一等奖", RewardReason = "成绩优异" }
-            };
-
-            punishments = new List<PunishmentRecord>();
-            healthRecords = new List<HealthRecord>();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -55,16 +42,53 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadStudentData()
         {
-            var loadedStudents = string.IsNullOrWhiteSpace(txtSearch.Text)
+            filteredStudents = string.IsNullOrWhiteSpace(txtSearch.Text)
                 ? studentService.GetAll()
                 : studentService.Search(txtSearch.Text);
 
+            currentPage = 1;
+            ApplySortAndPaging();
+        }
+
+        private void ApplySortAndPaging()
+        {
+            var sortedStudents = SortStudents(filteredStudents).ToList();
+            var pageSize = GetPageSize();
+            var totalPages = Math.Max(1, (int)Math.Ceiling(sortedStudents.Count / (double)pageSize));
+            currentPage = Math.Clamp(currentPage, 1, totalPages);
+            var pageStudents = sortedStudents.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+
             students.Clear();
-            foreach (var student in loadedStudents)
+            foreach (var student in pageStudents)
             {
                 students.Add(student);
             }
 
+            ConfigureStudentColumns();
+            txtPageInfo.Text = $"第 {currentPage}/{totalPages} 页，共 {sortedStudents.Count} 条";
+        }
+
+        private IEnumerable<Student> SortStudents(IEnumerable<Student> source)
+        {
+            var sortText = (cmbSort.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "学号升序";
+            return sortText switch
+            {
+                "学号降序" => source.OrderByDescending(student => student.StudentNo),
+                "姓名升序" => source.OrderBy(student => student.Name),
+                "院系升序" => source.OrderBy(student => student.Department).ThenBy(student => student.StudentNo),
+                "班级升序" => source.OrderBy(student => student.Class).ThenBy(student => student.StudentNo),
+                _ => source.OrderBy(student => student.StudentNo)
+            };
+        }
+
+        private int GetPageSize()
+        {
+            var text = (cmbPageSize.SelectedItem as ComboBoxItem)?.Content?.ToString();
+            return int.TryParse(text, out var pageSize) && pageSize > 0 ? pageSize : 10;
+        }
+
+        private void ConfigureStudentColumns()
+        {
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
@@ -83,6 +107,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadFamilyData()
         {
+            familyInfos = studentService.GetFamilyInfos();
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
@@ -98,6 +123,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadRewardData()
         {
+            rewards = studentService.GetRewardRecords();
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
@@ -113,6 +139,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadPunishmentData()
         {
+            punishments = studentService.GetPunishmentRecords();
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
@@ -129,6 +156,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void LoadHealthData()
         {
+            healthRecords = studentService.GetHealthRecords();
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
@@ -245,6 +273,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             txtSearch.Text = string.Empty;
+            currentPage = 1;
             TabControl_SelectionChanged(null!, null!);
         }
 
@@ -257,6 +286,216 @@ namespace StudentsManagerSystem.Views.StudentArchive
             }
 
             MessageBox.Show("当前仅为学生基本信息模块接入了数据库搜索。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void cmbSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tabControl?.SelectedIndex == 0 && filteredStudents.Count > 0)
+            {
+                currentPage = 1;
+                ApplySortAndPaging();
+            }
+        }
+
+        private void cmbPageSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tabControl?.SelectedIndex == 0 && filteredStudents.Count > 0)
+            {
+                currentPage = 1;
+                ApplySortAndPaging();
+            }
+        }
+
+        private void btnPrevPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (tabControl.SelectedIndex != 0)
+            {
+                return;
+            }
+
+            currentPage--;
+            ApplySortAndPaging();
+        }
+
+        private void btnNextPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (tabControl.SelectedIndex != 0)
+            {
+                return;
+            }
+
+            currentPage++;
+            ApplySortAndPaging();
+        }
+
+        private void btnImport_Click(object sender, RoutedEventArgs e)
+        {
+            if (tabControl.SelectedIndex != 0)
+            {
+                MessageBox.Show("当前仅支持学生基本信息导入。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new OpenFileDialog
+            {
+                Filter = "CSV 文件 (*.csv)|*.csv",
+                Title = "导入学生基本信息"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                var importedStudents = ImportStudents(dialog.FileName);
+                foreach (var student in importedStudents)
+                {
+                    var saveResult = studentService.SaveImported(student);
+                    if (!saveResult.Succeeded)
+                    {
+                        throw new InvalidOperationException($"{student.StudentNo}：{saveResult.Message}");
+                    }
+                }
+
+                AppLogger.Info($"导入学生基本信息：{importedStudents.Count} 条，文件={dialog.FileName}");
+                LoadStudentData();
+                MessageBox.Show($"成功导入 {importedStudents.Count} 条学生记录。", "导入完成", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error("导入学生基本信息失败。", ex);
+                MessageBox.Show($"导入失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnExport_Click(object sender, RoutedEventArgs e)
+        {
+            if (tabControl.SelectedIndex != 0)
+            {
+                MessageBox.Show("当前仅支持学生基本信息导出。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                Filter = "CSV 文件 (*.csv)|*.csv",
+                FileName = $"学生基本信息_{DateTime.Now:yyyyMMdd_HHmmss}.csv",
+                Title = "导出学生基本信息"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                CsvExportHelper.ExportToCsv(SortStudents(filteredStudents), dialog.FileName);
+                AppLogger.Info($"导出学生基本信息：{filteredStudents.Count} 条，文件={dialog.FileName}");
+                MessageBox.Show("学生基本信息导出成功。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error("导出学生基本信息失败。", ex);
+                MessageBox.Show($"导出失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static List<Student> ImportStudents(string filePath)
+        {
+            var lines = File.ReadAllLines(filePath);
+            if (lines.Length <= 1)
+            {
+                return new List<Student>();
+            }
+
+            var imported = new List<Student>();
+            for (var index = 1; index < lines.Length; index++)
+            {
+                var rawLine = lines[index].Trim();
+                if (string.IsNullOrWhiteSpace(rawLine))
+                {
+                    continue;
+                }
+
+                var columns = SplitCsvLine(rawLine);
+                if (columns.Count < 15)
+                {
+                    continue;
+                }
+
+                var baseIndex = columns.Count >= 16 ? 1 : 0;
+                imported.Add(new Student
+                {
+                    StudentNo = GetColumn(columns, baseIndex),
+                    Name = GetColumn(columns, baseIndex + 1),
+                    Gender = GetColumn(columns, baseIndex + 2),
+                    BirthDate = ParseDate(columns, baseIndex + 3),
+                    IdCard = GetColumn(columns, baseIndex + 4),
+                    Nation = GetColumn(columns, baseIndex + 5),
+                    PoliticalStatus = GetColumn(columns, baseIndex + 6),
+                    PhoneNumber = GetColumn(columns, baseIndex + 7),
+                    Email = GetColumn(columns, baseIndex + 8),
+                    Address = GetColumn(columns, baseIndex + 9),
+                    Department = GetColumn(columns, baseIndex + 10),
+                    Major = GetColumn(columns, baseIndex + 11),
+                    Class = GetColumn(columns, baseIndex + 12),
+                    EnrollmentDate = ParseDate(columns, baseIndex + 13),
+                    Photo = GetColumn(columns, baseIndex + 14)
+                });
+            }
+
+            return imported;
+        }
+
+        private static List<string> SplitCsvLine(string line)
+        {
+            var values = new List<string>();
+            var builder = new System.Text.StringBuilder();
+            var insideQuotes = false;
+
+            for (var index = 0; index < line.Length; index++)
+            {
+                var current = line[index];
+                if (current == '"')
+                {
+                    if (insideQuotes && index + 1 < line.Length && line[index + 1] == '"')
+                    {
+                        builder.Append('"');
+                        index++;
+                    }
+                    else
+                    {
+                        insideQuotes = !insideQuotes;
+                    }
+                }
+                else if (current == ',' && !insideQuotes)
+                {
+                    values.Add(builder.ToString());
+                    builder.Clear();
+                }
+                else
+                {
+                    builder.Append(current);
+                }
+            }
+
+            values.Add(builder.ToString());
+            return values;
+        }
+
+        private static string GetColumn(IReadOnlyList<string> columns, int index)
+        {
+            return index < columns.Count ? columns[index].Trim() : string.Empty;
+        }
+
+        private static DateTime? ParseDate(IReadOnlyList<string> columns, int index)
+        {
+            return DateTime.TryParse(GetColumn(columns, index), CultureInfo.InvariantCulture, DateTimeStyles.None, out var value)
+                ? value
+                : null;
         }
     }
 }

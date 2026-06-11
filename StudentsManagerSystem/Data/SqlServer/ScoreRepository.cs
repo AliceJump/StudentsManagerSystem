@@ -70,6 +70,26 @@ namespace StudentsManagerSystem.Data.SqlServer
             return context.Courses.AsNoTracking().OrderBy(course => course.CourseNo).ToList();
         }
 
+        public List<string> GetAcademicYears()
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Scores.AsNoTracking()
+                .Select(score => score.AcademicYear)
+                .Distinct()
+                .OrderByDescending(year => year)
+                .ToList();
+        }
+
+        public List<string> GetSemesters()
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.LookupOptions.AsNoTracking()
+                .Where(item => item.Category == "Semester" && item.IsActive)
+                .OrderBy(item => item.SortOrder)
+                .Select(item => item.Value)
+                .ToList();
+        }
+
         public int Add(Score score)
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();

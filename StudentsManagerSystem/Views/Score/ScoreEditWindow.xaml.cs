@@ -11,6 +11,8 @@ namespace StudentsManagerSystem.Views.Score
     {
         private readonly ScoreService scoreService = new ScoreService();
         private readonly List<CourseModel> courses;
+        private readonly List<string> academicYears;
+        private readonly List<string> semesters;
         private readonly ScoreModel? existingScore;
 
         public ScoreModel? Result { get; private set; }
@@ -19,7 +21,10 @@ namespace StudentsManagerSystem.Views.Score
         {
             InitializeComponent();
             courses = scoreService.GetCourses();
+            academicYears = scoreService.GetAcademicYears();
+            semesters = scoreService.GetSemesters();
             existingScore = null;
+            LoadBusinessOptions();
             LoadCourses();
         }
 
@@ -27,9 +32,27 @@ namespace StudentsManagerSystem.Views.Score
         {
             InitializeComponent();
             courses = scoreService.GetCourses();
+            academicYears = scoreService.GetAcademicYears();
+            semesters = scoreService.GetSemesters();
             existingScore = score;
+            LoadBusinessOptions();
             LoadCourses();
             LoadScore(score);
+        }
+
+        private void LoadBusinessOptions()
+        {
+            cmbAcademicYear.ItemsSource = academicYears;
+            if (academicYears.Count > 0)
+            {
+                cmbAcademicYear.SelectedIndex = 0;
+            }
+
+            cmbSemester.ItemsSource = semesters;
+            if (semesters.Count > 0)
+            {
+                cmbSemester.SelectedIndex = 0;
+            }
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -167,7 +190,7 @@ namespace StudentsManagerSystem.Views.Score
         {
             return comboBox.SelectedItem is System.Windows.Controls.ComboBoxItem item
                 ? item.Content?.ToString() ?? string.Empty
-                : comboBox.Text.Trim();
+                : comboBox.SelectedItem?.ToString() ?? comboBox.Text.Trim();
         }
 
         private static string CalculateGrade(decimal? totalScore)

@@ -48,7 +48,7 @@ namespace StudentsManagerSystem.Common
 
         public static bool ValidateSemester(string semester)
         {
-            return semester == "1" || semester == "2" || semester == "第一学期" || semester == "第二学期";
+            return !string.IsNullOrWhiteSpace(semester);
         }
 
         public static bool ValidateMoney(string value)

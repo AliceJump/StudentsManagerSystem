@@ -17,7 +17,25 @@ namespace StudentsManagerSystem.Views.Score
         public ScoreView()
         {
             InitializeComponent();
+            LoadBusinessOptions();
             LoadScoreData();
+        }
+
+        private void LoadBusinessOptions()
+        {
+            var years = scoreService.GetAcademicYears();
+            cmbAcademicYear.ItemsSource = years;
+            if (years.Count > 0)
+            {
+                cmbAcademicYear.SelectedIndex = 0;
+            }
+
+            var semesters = scoreService.GetSemesters();
+            cmbSemester.ItemsSource = semesters;
+            if (semesters.Count > 0)
+            {
+                cmbSemester.SelectedIndex = 0;
+            }
         }
 
         private void LoadScoreData()
@@ -143,10 +161,12 @@ namespace StudentsManagerSystem.Views.Score
                 }
 
                 LoadScoreData();
+                AppLogger.Info($"导入成绩：{importedItems.Count} 条，文件={dialog.FileName}");
                 MessageBox.Show($"成功导入 {importedItems.Count} 条成绩记录。", "导入完成", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
+                AppLogger.Error("导入成绩失败。", ex);
                 MessageBox.Show($"导入失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -168,10 +188,12 @@ namespace StudentsManagerSystem.Views.Score
             try
             {
                 CsvExportHelper.ExportToCsv(scores, dialog.FileName);
+                AppLogger.Info($"导出成绩：{scores.Count} 条，文件={dialog.FileName}");
                 MessageBox.Show("成绩导出成功。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
+                AppLogger.Error("导出成绩失败。", ex);
                 MessageBox.Show($"导出失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -185,7 +207,7 @@ namespace StudentsManagerSystem.Views.Score
         {
             return comboBox.SelectedItem is System.Windows.Controls.ComboBoxItem item
                 ? item.Content?.ToString() ?? string.Empty
-                : comboBox.Text.Trim();
+                : comboBox.SelectedItem?.ToString() ?? comboBox.Text.Trim();
         }
 
         private static List<ScoreModel> ImportScores(string filePath)

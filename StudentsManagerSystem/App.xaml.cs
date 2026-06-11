@@ -12,6 +12,10 @@ namespace StudentsManagerSystem
     /// </summary>
     public partial class App : Application
     {
+        public static string CurrentUserRole { get; private set; } = string.Empty;
+
+        public static string CurrentUserDisplayName { get; private set; } = string.Empty;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             AppLogger.Info("应用启动。");
@@ -54,6 +58,8 @@ namespace StudentsManagerSystem
             }
 
             base.OnStartup(e);
+            CurrentUserDisplayName = login.DisplayName ?? string.Empty;
+            CurrentUserRole = login.Role ?? string.Empty;
             var main = new MainWindow();
             if (!string.IsNullOrEmpty(login.DisplayName))
             {

@@ -1,22 +1,29 @@
 # 学生管理 - 增删改查
 
+当前学生基本信息管理采用 `StudentArchiveView` + `StudentService` + `StudentRepository` 的调用链路。数据库为 SQLite，数据访问通过 EF Core 完成；`Data/SqlServer` 目录名称为历史遗留命名，当前仓储实际通过 `StudentsManagerDbContextFactory` 创建 EF Core 上下文。
+
 ## 查询（Read）
 ```csharp
 public List<Student> GetAll()
 {
-    using var connection = SqlServerConnectionFactory.CreateConnection();
-    connection.Open();
-    using var command = connection.CreateCommand();
-    command.CommandText = "SELECT Id, StudentNo, Name FROM dbo.Students ORDER BY StudentNo;";
-    using var reader = command.ExecuteReader();
-    while (reader.Read()) students.Add(MapStudent(reader));
-    return students;
+    using var context = StudentsManagerDbContextFactory.CreateDbContext();
+    return context.Students.AsNoTracking()
+        .OrderBy(student => student.StudentNo)
+        .ToList();
 }
 
 public List<Student> Search(string keyword)
 {
-    command.CommandText = "WHERE StudentNo LIKE @Keyword OR Name LIKE @Keyword ...";
-    command.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+    using var context = StudentsManagerDbContextFactory.CreateDbContext();
+    return context.Students.AsNoTracking()
+        .Where(student =>
+            EF.Functions.Like(student.StudentNo, $"%{keyword}%") ||
+            EF.Functions.Like(student.Name, $"%{keyword}%") ||
+            EF.Functions.Like(student.Department, $"%{keyword}%") ||
+            EF.Functions.Like(student.Major, $"%{keyword}%") ||
+            EF.Functions.Like(student.Class, $"%{keyword}%"))
+        .OrderBy(student => student.StudentNo)
+        .ToList();
 }
 ```
 
@@ -24,9 +31,10 @@ public List<Student> Search(string keyword)
 ```csharp
 public int Add(Student student)
 {
-    command.CommandText = @"INSERT INTO dbo.Students (...) OUTPUT INSERTED.Id VALUES (@StudentNo, @Name, ...);";
-    AddStudentParameters(command, student);
-    return Convert.ToInt32(command.ExecuteScalar());  // 返回ID
+    using var context = StudentsManagerDbContextFactory.CreateDbContext();
+    context.Students.Add(student);
+    context.SaveChanges();
+    return student.Id;
 }
 ```
 
@@ -34,28 +42,31 @@ public int Add(Student student)
 ```csharp
 public void Update(Student student)
 {
-    command.CommandText = "UPDATE dbo.Students SET StudentNo = @StudentNo, Name = @Name, ... WHERE Id = @Id;";
-    AddStudentParameters(command, student);
-    command.Parameters.AddWithValue("@Id", student.Id);
-    command.ExecuteNonQuery();
+    using var context = StudentsManagerDbContextFactory.CreateDbContext();
+    context.Students.Update(student);
+    context.SaveChanges();
 }
 ```
 
-## 删除（Delete - 含事务级联）
+## 删除（Delete - 删除关联数据）
 ```csharp
 public void Delete(int id)
 {
-    using var connection = SqlServerConnectionFactory.CreateConnection();
-    using var transaction = connection.BeginTransaction();
-    try
-    {
-        // 先删关联表：FamilyInfos, RewardRecords, PunishmentRecords, HealthRecords, Scores...
-        DeleteRelatedRecords(connection, transaction, id, "dbo.FamilyInfos");
-        // 最后删学生
-        command.CommandText = "DELETE FROM dbo.Students WHERE Id = @Id;";
-        transaction.Commit();
-    }
-    catch { transaction.Rollback(); throw; }
+    using var context = StudentsManagerDbContextFactory.CreateDbContext();
+    var student = context.Students.FirstOrDefault(item => item.Id == id);
+    if (student == null) return;
+
+    context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentId == id));
+    context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentId == id));
+    context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentId == id));
+    context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentId == id));
+    context.StudentRegistrations.RemoveRange(context.StudentRegistrations.Where(item => item.StudentId == id));
+    context.StatusChangeRecords.RemoveRange(context.StatusChangeRecords.Where(item => item.StudentId == id));
+    context.ScholarshipInfos.RemoveRange(context.ScholarshipInfos.Where(item => item.StudentId == id));
+    context.GraduationInfos.RemoveRange(context.GraduationInfos.Where(item => item.StudentId == id));
+    context.Scores.RemoveRange(context.Scores.Where(item => item.StudentId == id));
+    context.Students.Remove(student);
+    context.SaveChanges();
 }
 ```
 
@@ -66,9 +77,9 @@ public void Delete(int id)
 **查询显示**
 ```csharp
 students = txtSearch.Text.Trim().Length > 0 
-    ? repo.Search(txtSearch.Text) 
-    : repo.GetAll();
-dataGrid.ItemsSource = students;
+    ? studentService.Search(txtSearch.Text) 
+    : studentService.GetAll();
+ApplySortAndPaging();
 ```
 
 **新增/修改**
@@ -76,7 +87,11 @@ dataGrid.ItemsSource = students;
 private void btnAdd_Click(object sender, RoutedEventArgs e)
 {
     var win = new StudentEditWindow();
-    if (win.ShowDialog() == true) LoadStudentData();  // 刷新
+    if (win.ShowDialog() == true && win.ResultStudent != null)
+    {
+        var result = studentService.Add(win.ResultStudent);
+        if (result.Succeeded) LoadStudentData();
+    }
 }
 ```
 
@@ -84,14 +99,33 @@ private void btnAdd_Click(object sender, RoutedEventArgs e)
 ```csharp
 if (MessageBox.Show("确认删除吗?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
 {
-    repo.Delete(selected.Id);
+    studentService.Delete(selected.Id);
     LoadStudentData();
 }
+```
+
+**排序/分页**
+```csharp
+var sortedStudents = SortStudents(filteredStudents).ToList();
+var pageStudents = sortedStudents
+    .Skip((currentPage - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
+dataGrid.ItemsSource = pageStudents;
+```
+
+**CSV 导入/导出**
+```csharp
+var importedStudents = ImportStudents(dialog.FileName);
+foreach (var student in importedStudents) studentService.SaveImported(student);
+CsvExportHelper.ExportToCsv(SortStudents(filteredStudents), dialog.FileName);
 ```
 
 ---
 
 ## 关键点
-- 参数化查询 `@Keyword` 防SQL注入
-- 删除用事务级联，`Rollback()` 回滚错误
-- `using` 自动释放连接和资源
+- 查询通过 EF Core LINQ 和 `EF.Functions.Like` 生成参数化 SQL
+- 新增、修改、删除通过 `StudentService` 统一做业务校验和日志记录
+- 删除学生时会清理关联档案、学籍、奖助、毕业、成绩等数据
+- 学生基本信息页面支持搜索、排序、分页、CSV 导入和 CSV 导出
+- `using` 自动释放 EF Core `DbContext` 资源

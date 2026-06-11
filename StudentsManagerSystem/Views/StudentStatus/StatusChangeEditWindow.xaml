@@ -18,9 +18,7 @@
             <Label Grid.Row="4" Content="原信息:"/><TextBox x:Name="txtOriginalInfo" Grid.Row="4" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="5" Content="新信息:"/><TextBox x:Name="txtNewInfo" Grid.Row="5" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="6" Content="原因:"/><TextBox x:Name="txtReason" Grid.Row="6" Grid.Column="1" Margin="4"/>
-            <Label Grid.Row="7" Content="审批状态:"/><ComboBox x:Name="cmbApprovalStatus" Grid.Row="7" Grid.Column="1" Margin="4">
-                <ComboBoxItem Content="待审批"/><ComboBoxItem Content="已批准"/><ComboBoxItem Content="已驳回"/>
-            </ComboBox>
+            <Label Grid.Row="7" Content="审批状态:"/><ComboBox x:Name="cmbApprovalStatus" Grid.Row="7" Grid.Column="1" Margin="4"/>
             <StackPanel Grid.Row="8" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="btnOk" Width="90" Margin="4" Click="btnOk_Click">确定</Button>
                 <Button Width="90" Margin="4" Click="btnCancel_Click">取消</Button>

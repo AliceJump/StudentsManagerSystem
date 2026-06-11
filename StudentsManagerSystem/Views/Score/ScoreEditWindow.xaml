@@ -86,16 +86,10 @@
                         <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStudentName" Style="{StaticResource TextBoxStyle}"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="起始学年：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbAcademicYear" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="2024" IsSelected="True"/>
-                            <ComboBoxItem Content="2023"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbAcademicYear" Style="{StaticResource ComboBoxStyle}"/>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="学期：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbSemester" Style="{StaticResource ComboBoxStyle}">
-                            <ComboBoxItem Content="第一学期" IsSelected="True"/>
-                            <ComboBoxItem Content="第二学期"/>
-                        </ComboBox>
+                        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbSemester" Style="{StaticResource ComboBoxStyle}"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="课程：*" Style="{StaticResource LabelStyle}"/>
                         <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cmbCourse" Style="{StaticResource ComboBoxStyle}" SelectionChanged="cmbCourse_SelectionChanged"/>

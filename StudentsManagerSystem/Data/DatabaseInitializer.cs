@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Models;
 
@@ -16,7 +17,9 @@ namespace StudentsManagerSystem.Data
 
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
             context.Database.EnsureCreated();
+            EnsureLookupOptionsTable(context);
 
+            SeedLookupOptions(context);
             SeedDepartments(context);
             SeedMajors(context);
             SeedClasses(context);
@@ -27,6 +30,42 @@ namespace StudentsManagerSystem.Data
             SeedUsers(context);
 
             AppLogger.Info("SQLite 数据库初始化完成。");
+        }
+
+        private static void EnsureLookupOptionsTable(StudentsManagerDbContext context)
+        {
+            context.Database.ExecuteSqlRaw(@"
+CREATE TABLE IF NOT EXISTS LookupOptions (
+    Id INTEGER NOT NULL CONSTRAINT PK_LookupOptions PRIMARY KEY AUTOINCREMENT,
+    Category TEXT NOT NULL,
+    Value TEXT NOT NULL,
+    SortOrder INTEGER NOT NULL,
+    IsActive INTEGER NOT NULL
+);");
+            context.Database.ExecuteSqlRaw("CREATE UNIQUE INDEX IF NOT EXISTS IX_LookupOptions_Category_Value ON LookupOptions (Category, Value);");
+        }
+
+        private static void SeedLookupOptions(StudentsManagerDbContext context)
+        {
+            if (context.LookupOptions.Any())
+            {
+                return;
+            }
+
+            context.LookupOptions.AddRange(
+                new LookupOption { Category = "Gender", Value = "男", SortOrder = 1 },
+                new LookupOption { Category = "Gender", Value = "女", SortOrder = 2 },
+                new LookupOption { Category = "PoliticalStatus", Value = "群众", SortOrder = 1 },
+                new LookupOption { Category = "PoliticalStatus", Value = "团员", SortOrder = 2 },
+                new LookupOption { Category = "PoliticalStatus", Value = "党员", SortOrder = 3 },
+                new LookupOption { Category = "Semester", Value = "第一学期", SortOrder = 1 },
+                new LookupOption { Category = "Semester", Value = "第二学期", SortOrder = 2 },
+                new LookupOption { Category = "ScholarshipStatus", Value = "待发放", SortOrder = 1 },
+                new LookupOption { Category = "ScholarshipStatus", Value = "已发放", SortOrder = 2 },
+                new LookupOption { Category = "ApprovalStatus", Value = "待审批", SortOrder = 1 },
+                new LookupOption { Category = "ApprovalStatus", Value = "已批准", SortOrder = 2 },
+                new LookupOption { Category = "ApprovalStatus", Value = "已驳回", SortOrder = 3 });
+            context.SaveChanges();
         }
 
         private static void SeedDepartments(StudentsManagerDbContext context)

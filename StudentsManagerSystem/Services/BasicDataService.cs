@@ -14,11 +14,20 @@ namespace StudentsManagerSystem.Services
 
         public List<Class> GetClasses() => repository.GetClasses();
 
+        public List<string> GetDepartmentNames() => GetDepartments().Select(item => item.DepartmentName).ToList();
+
+        public List<string> GetMajorNames() => GetMajors().Select(item => item.MajorName).ToList();
+
+        public List<string> GetClassNames() => GetClasses().Select(item => item.ClassName).ToList();
+
+        public List<string> GetLookupValues(string category) => repository.GetLookupValues(category);
+
         public ServiceResult AddDepartment(Department department)
         {
             var validation = ValidateDepartment(department);
             if (!validation.Succeeded) return validation;
             repository.AddDepartment(department);
+            AppLogger.Info($"新增院系：{department.DepartmentNo} {department.DepartmentName}");
             return ServiceResult.Success("院系新增成功");
         }
 
@@ -27,6 +36,7 @@ namespace StudentsManagerSystem.Services
             var validation = ValidateDepartment(department);
             if (!validation.Succeeded) return validation;
             repository.UpdateDepartment(department);
+            AppLogger.Info($"修改院系：{department.DepartmentNo} {department.DepartmentName}");
             return ServiceResult.Success("院系修改成功");
         }
 
@@ -35,6 +45,7 @@ namespace StudentsManagerSystem.Services
             var validation = ValidateMajor(major);
             if (!validation.Succeeded) return validation;
             repository.AddMajor(major);
+            AppLogger.Info($"新增专业：{major.MajorNo} {major.MajorName}");
             return ServiceResult.Success("专业新增成功");
         }
 
@@ -43,6 +54,7 @@ namespace StudentsManagerSystem.Services
             var validation = ValidateMajor(major);
             if (!validation.Succeeded) return validation;
             repository.UpdateMajor(major);
+            AppLogger.Info($"修改专业：{major.MajorNo} {major.MajorName}");
             return ServiceResult.Success("专业修改成功");
         }
 
@@ -51,6 +63,7 @@ namespace StudentsManagerSystem.Services
             var validation = ValidateClass(classInfo);
             if (!validation.Succeeded) return validation;
             repository.AddClass(classInfo);
+            AppLogger.Info($"新增班级：{classInfo.ClassNo} {classInfo.ClassName}");
             return ServiceResult.Success("班级新增成功");
         }
 
@@ -59,14 +72,27 @@ namespace StudentsManagerSystem.Services
             var validation = ValidateClass(classInfo);
             if (!validation.Succeeded) return validation;
             repository.UpdateClass(classInfo);
+            AppLogger.Info($"修改班级：{classInfo.ClassNo} {classInfo.ClassName}");
             return ServiceResult.Success("班级修改成功");
         }
 
-        public void DeleteDepartment(int id) => repository.DeleteDepartment(id);
+        public void DeleteDepartment(int id)
+        {
+            repository.DeleteDepartment(id);
+            AppLogger.Info($"删除院系：Id={id}");
+        }
 
-        public void DeleteMajor(int id) => repository.DeleteMajor(id);
+        public void DeleteMajor(int id)
+        {
+            repository.DeleteMajor(id);
+            AppLogger.Info($"删除专业：Id={id}");
+        }
 
-        public void DeleteClass(int id) => repository.DeleteClass(id);
+        public void DeleteClass(int id)
+        {
+            repository.DeleteClass(id);
+            AppLogger.Info($"删除班级：Id={id}");
+        }
 
         private static ServiceResult ValidateDepartment(Department department)
         {

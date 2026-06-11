@@ -58,17 +58,10 @@
         <Border Grid.Row="0" Background="#F8F9FA" Padding="15" CornerRadius="5" Margin="0,0,0,15">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="起始学年：" VerticalAlignment="Center" FontSize="14" Margin="0,0,10,0"/>
-                <ComboBox x:Name="cmbAcademicYear" Width="150" Height="32" FontSize="14">
-                    <ComboBoxItem Content="2024" IsSelected="True"/>
-                    <ComboBoxItem Content="2023"/>
-                    <ComboBoxItem Content="2022"/>
-                </ComboBox>
+                <ComboBox x:Name="cmbAcademicYear" Width="150" Height="32" FontSize="14"/>
                 
                 <TextBlock Text="学期：" VerticalAlignment="Center" FontSize="14" Margin="20,0,10,0"/>
-                <ComboBox x:Name="cmbSemester" Width="120" Height="32" FontSize="14">
-                    <ComboBoxItem Content="第一学期" IsSelected="True"/>
-                    <ComboBoxItem Content="第二学期"/>
-                </ComboBox>
+                <ComboBox x:Name="cmbSemester" Width="120" Height="32" FontSize="14"/>
                 
                 <Button Content="查询" Style="{StaticResource ButtonStyle}" Margin="20,5,5,5" Click="btnQuery_Click"/>
             </StackPanel>

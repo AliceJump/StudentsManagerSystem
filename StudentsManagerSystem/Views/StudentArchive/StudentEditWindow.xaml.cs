@@ -8,6 +8,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
     {
         private readonly int editingStudentId;
         private readonly StudentService studentService = new StudentService();
+        private readonly BasicDataService basicDataService = new BasicDataService();
 
         public Student? ResultStudent { get; private set; }
 
@@ -18,6 +19,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
         public StudentEditWindow(Student? student)
         {
             InitializeComponent();
+            LoadBusinessOptions();
 
             if (student != null)
             {
@@ -41,16 +43,36 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private static void SetComboBoxSelectedText(System.Windows.Controls.ComboBox comboBox, string text)
         {
-            foreach (var item in comboBox.Items)
+            comboBox.SelectedItem = comboBox.Items.Cast<object?>()
+                .FirstOrDefault(item => string.Equals(GetComboItemText(item), text, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void LoadBusinessOptions()
+        {
+            cmbGender.ItemsSource = basicDataService.GetLookupValues("Gender");
+            cmbPoliticalStatus.ItemsSource = basicDataService.GetLookupValues("PoliticalStatus");
+            cmbDepartment.ItemsSource = basicDataService.GetDepartmentNames();
+            cmbMajor.ItemsSource = basicDataService.GetMajorNames();
+            cmbClass.ItemsSource = basicDataService.GetClassNames();
+
+            SelectFirstIfAny(cmbGender);
+            SelectFirstIfAny(cmbPoliticalStatus);
+            SelectFirstIfAny(cmbDepartment);
+            SelectFirstIfAny(cmbMajor);
+            SelectFirstIfAny(cmbClass);
+        }
+
+        private static void SelectFirstIfAny(System.Windows.Controls.ComboBox comboBox)
+        {
+            if (comboBox.Items.Count > 0)
             {
-                if (item is System.Windows.Controls.ComboBoxItem comboBoxItem &&
-                    string.Equals(comboBoxItem.Content?.ToString(), text, StringComparison.OrdinalIgnoreCase))
-                {
-                    comboBox.SelectedItem = comboBoxItem;
-                    return;
-                }
+                comboBox.SelectedIndex = 0;
             }
         }
+
+        private static string GetComboItemText(object? item) => item is System.Windows.Controls.ComboBoxItem comboBoxItem
+            ? comboBoxItem.Content?.ToString() ?? string.Empty
+            : item?.ToString() ?? string.Empty;
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
@@ -80,17 +102,17 @@ namespace StudentsManagerSystem.Views.StudentArchive
                 Id = editingStudentId,
                 StudentNo = studentNo,
                 Name = name,
-                Gender = ((System.Windows.Controls.ComboBoxItem)cmbGender.SelectedItem).Content?.ToString() ?? string.Empty,
+                Gender = GetComboItemText(cmbGender.SelectedItem),
                 BirthDate = dpBirthDate.SelectedDate,
                 IdCard = idCard,
                 Nation = txtNation.Text.Trim(),
-                PoliticalStatus = cmbPoliticalStatus.SelectedItem is System.Windows.Controls.ComboBoxItem politicalStatusItem ? politicalStatusItem.Content?.ToString() ?? string.Empty : string.Empty,
+                PoliticalStatus = GetComboItemText(cmbPoliticalStatus.SelectedItem),
                 PhoneNumber = phone,
                 Email = email,
                 Address = txtAddress.Text.Trim(),
-                Department = cmbDepartment.SelectedItem is System.Windows.Controls.ComboBoxItem departmentItem ? departmentItem.Content?.ToString() ?? string.Empty : string.Empty,
-                Major = cmbMajor.SelectedItem is System.Windows.Controls.ComboBoxItem majorItem ? majorItem.Content?.ToString() ?? string.Empty : string.Empty,
-                Class = cmbClass.SelectedItem is System.Windows.Controls.ComboBoxItem classItem ? classItem.Content?.ToString() ?? string.Empty : string.Empty,
+                Department = GetComboItemText(cmbDepartment.SelectedItem),
+                Major = GetComboItemText(cmbMajor.SelectedItem),
+                Class = GetComboItemText(cmbClass.SelectedItem),
                 EnrollmentDate = dpEnrollment.SelectedDate,
                 Photo = string.Empty
             };

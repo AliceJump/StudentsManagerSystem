@@ -49,6 +49,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -68,6 +69,8 @@
             <Button Content="修改" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click"/>
             <Button Content="删除" Style="{StaticResource DeleteButtonStyle}" Click="btnDelete_Click"/>
             <Button Content="查看详情" Style="{StaticResource ButtonStyle}" Click="btnView_Click"/>
+            <Button Content="导入" Style="{StaticResource ButtonStyle}" Click="btnImport_Click"/>
+            <Button Content="导出" Style="{StaticResource ButtonStyle}" Click="btnExport_Click"/>
             <Button Content="刷新" Style="{StaticResource ButtonStyle}" Click="btnRefresh_Click"/>
             
             <!-- 搜索框 -->
@@ -79,8 +82,28 @@
             </StackPanel>
         </StackPanel>
 
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="排序：" VerticalAlignment="Center" FontSize="14" Margin="0,0,10,0"/>
+            <ComboBox x:Name="cmbSort" Width="150" Height="32" FontSize="14" SelectionChanged="cmbSort_SelectionChanged">
+                <ComboBoxItem Content="学号升序" IsSelected="True"/>
+                <ComboBoxItem Content="学号降序"/>
+                <ComboBoxItem Content="姓名升序"/>
+                <ComboBoxItem Content="院系升序"/>
+                <ComboBoxItem Content="班级升序"/>
+            </ComboBox>
+            <TextBlock Text="每页：" VerticalAlignment="Center" FontSize="14" Margin="20,0,10,0"/>
+            <ComboBox x:Name="cmbPageSize" Width="90" Height="32" FontSize="14" SelectionChanged="cmbPageSize_SelectionChanged">
+                <ComboBoxItem Content="10" IsSelected="True"/>
+                <ComboBoxItem Content="20"/>
+                <ComboBoxItem Content="50"/>
+            </ComboBox>
+            <Button Content="上一页" Style="{StaticResource ButtonStyle}" Click="btnPrevPage_Click"/>
+            <Button Content="下一页" Style="{StaticResource ButtonStyle}" Click="btnNextPage_Click"/>
+            <TextBlock x:Name="txtPageInfo" Text="第 1/1 页，共 0 条" VerticalAlignment="Center" FontSize="14" Margin="10,0,0,0"/>
+        </StackPanel>
+
         <!-- 数据列表 -->
-        <DataGrid x:Name="dataGrid" Grid.Row="2" 
+        <DataGrid x:Name="dataGrid" Grid.Row="3" 
                   AutoGenerateColumns="False" 
                   CanUserAddRows="False"
                   IsReadOnly="True"

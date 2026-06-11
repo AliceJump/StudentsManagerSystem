@@ -27,6 +27,17 @@ namespace StudentsManagerSystem.Data.SqlServer
             return context.Classes.AsNoTracking().OrderBy(item => item.ClassNo).ToList();
         }
 
+        public List<string> GetLookupValues(string category)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.LookupOptions.AsNoTracking()
+                .Where(item => item.Category == category && item.IsActive)
+                .OrderBy(item => item.SortOrder)
+                .ThenBy(item => item.Value)
+                .Select(item => item.Value)
+                .ToList();
+        }
+
         public int AddDepartment(Department department)
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();

@@ -10,9 +10,10 @@ namespace StudentsManagerSystem.Data.SqlServer
     /// </summary>
     internal sealed class UsersRepository
     {
-        public bool ValidateCredentials(string username, string password, out string? displayName)
+        public bool ValidateCredentials(string username, string password, out string? displayName, out string? role)
         {
             displayName = null;
+            role = null;
             username = username.Trim();
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
@@ -33,6 +34,7 @@ namespace StudentsManagerSystem.Data.SqlServer
             }
 
             displayName = user.DisplayName;
+            role = user.Role;
             user.LastLoginAt = DateTime.Now;
             context.Users.Update(user);
             context.SaveChanges();
