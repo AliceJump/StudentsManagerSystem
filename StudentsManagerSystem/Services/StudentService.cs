@@ -1,5 +1,5 @@
 using StudentsManagerSystem.Common;
-using StudentsManagerSystem.Data.SqlServer;
+using StudentsManagerSystem.Data.Repositories;
 using StudentsManagerSystem.Models;
 
 namespace StudentsManagerSystem.Services

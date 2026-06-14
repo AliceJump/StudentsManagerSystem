@@ -83,6 +83,10 @@ namespace StudentsManagerSystem
                         viewModel.CurrentPageTitle = "信息查询统计";
                         MainFrame.Navigate(new Uri("Views/Query/QueryView.xaml", UriKind.Relative));
                         break;
+                    case "btnLogs":
+                        viewModel.CurrentPageTitle = "系统日志查看";
+                        MainFrame.Navigate(new Uri("Views/Logs/LogView.xaml", UriKind.Relative));
+                        break;
                 }
             }
         }

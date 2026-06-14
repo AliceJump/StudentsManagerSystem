@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace StudentsManagerSystem.Data
 {
@@ -12,6 +13,18 @@ namespace StudentsManagerSystem.Data
             var options = new DbContextOptionsBuilder<StudentsManagerDbContext>()
                 .UseSqlite(DatabaseConfiguration.ConnectionString)
                 .EnableSensitiveDataLogging()
+                .Options;
+
+            return new StudentsManagerDbContext(options);
+        }
+    }
+
+    public sealed class DesignTimeStudentsManagerDbContextFactory : IDesignTimeDbContextFactory<StudentsManagerDbContext>
+    {
+        public StudentsManagerDbContext CreateDbContext(string[] args)
+        {
+            var options = new DbContextOptionsBuilder<StudentsManagerDbContext>()
+                .UseSqlite(DatabaseConfiguration.ConnectionString)
                 .Options;
 
             return new StudentsManagerDbContext(options);

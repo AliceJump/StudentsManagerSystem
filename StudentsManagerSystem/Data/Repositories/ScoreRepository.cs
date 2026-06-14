@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentsManagerSystem.Data;
 using StudentsManagerSystem.Models;
 
-namespace StudentsManagerSystem.Data.SqlServer
+namespace StudentsManagerSystem.Data.Repositories
 {
     /// <summary>
     /// 学生成绩仓储。

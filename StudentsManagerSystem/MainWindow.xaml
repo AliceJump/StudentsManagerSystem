@@ -92,7 +92,12 @@
                              Click="MenuButton_Click"/>
                 
                 <RadioButton x:Name="btnQuery" 
-                             Content="信息查询统计" 
+                              Content="信息查询统计" 
+                              Style="{StaticResource MenuButtonStyle}"
+                              Click="MenuButton_Click"/>
+
+                <RadioButton x:Name="btnLogs" 
+                             Content="系统日志查看" 
                              Style="{StaticResource MenuButtonStyle}"
                              Click="MenuButton_Click"/>
             </StackPanel>

@@ -3,7 +3,7 @@ using System.Data;
 using System.Windows;
 using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Data;
-using StudentsManagerSystem.Data.SqlServer;
+using StudentsManagerSystem.Data.Repositories;
 
 namespace StudentsManagerSystem
 {

@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Models;
@@ -18,6 +19,7 @@ namespace StudentsManagerSystem.Data
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
             context.Database.EnsureCreated();
             EnsureLookupOptionsTable(context);
+            EnsureStudentArchiveStudentNoColumns(context);
 
             SeedLookupOptions(context);
             SeedDepartments(context);
@@ -30,6 +32,73 @@ namespace StudentsManagerSystem.Data
             SeedUsers(context);
 
             AppLogger.Info("SQLite 数据库初始化完成。");
+        }
+
+        private static void EnsureStudentArchiveStudentNoColumns(StudentsManagerDbContext context)
+        {
+            EnsureColumn(context, "FamilyInfos", "StudentNo", "TEXT NOT NULL DEFAULT ''");
+            EnsureColumn(context, "RewardRecords", "StudentNo", "TEXT NOT NULL DEFAULT ''");
+            EnsureColumn(context, "PunishmentRecords", "StudentNo", "TEXT NOT NULL DEFAULT ''");
+            EnsureColumn(context, "HealthRecords", "StudentNo", "TEXT NOT NULL DEFAULT ''");
+
+            context.Database.ExecuteSqlRaw("UPDATE FamilyInfos SET StudentNo = COALESCE((SELECT StudentNo FROM Students WHERE Students.Id = FamilyInfos.StudentId), StudentNo) WHERE StudentNo = '';");
+            context.Database.ExecuteSqlRaw("UPDATE RewardRecords SET StudentNo = COALESCE((SELECT StudentNo FROM Students WHERE Students.Id = RewardRecords.StudentId), StudentNo) WHERE StudentNo = '';");
+            context.Database.ExecuteSqlRaw("UPDATE PunishmentRecords SET StudentNo = COALESCE((SELECT StudentNo FROM Students WHERE Students.Id = PunishmentRecords.StudentId), StudentNo) WHERE StudentNo = '';");
+            context.Database.ExecuteSqlRaw("UPDATE HealthRecords SET StudentNo = COALESCE((SELECT StudentNo FROM Students WHERE Students.Id = HealthRecords.StudentId), StudentNo) WHERE StudentNo = '';");
+
+            context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_FamilyInfos_StudentNo ON FamilyInfos (StudentNo);");
+            context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_RewardRecords_StudentNo ON RewardRecords (StudentNo);");
+            context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_PunishmentRecords_StudentNo ON PunishmentRecords (StudentNo);");
+            context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_HealthRecords_StudentNo ON HealthRecords (StudentNo);");
+        }
+
+        private static void EnsureColumn(StudentsManagerDbContext context, string tableName, string columnName, string definition)
+        {
+            if (!IsSafeIdentifier(tableName) || !IsSafeIdentifier(columnName))
+            {
+                throw new InvalidOperationException("数据库标识符不合法。");
+            }
+
+            var connection = context.Database.GetDbConnection();
+            var shouldClose = connection.State != System.Data.ConnectionState.Open;
+            if (shouldClose)
+            {
+                connection.Open();
+            }
+
+            try
+            {
+                using var checkCommand = connection.CreateCommand();
+                checkCommand.CommandText = "SELECT COUNT(1) FROM pragma_table_info($tableName) WHERE name = $columnName;";
+                var tableParameter = checkCommand.CreateParameter();
+                tableParameter.ParameterName = "$tableName";
+                tableParameter.Value = tableName;
+                checkCommand.Parameters.Add(tableParameter);
+                var columnParameter = checkCommand.CreateParameter();
+                columnParameter.ParameterName = "$columnName";
+                columnParameter.Value = columnName;
+                checkCommand.Parameters.Add(columnParameter);
+
+                var exists = Convert.ToInt32(checkCommand.ExecuteScalar());
+                if (exists == 0)
+                {
+                    using var alterCommand = connection.CreateCommand();
+                    alterCommand.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
+                    alterCommand.ExecuteNonQuery();
+                }
+            }
+            finally
+            {
+                if (shouldClose)
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        private static bool IsSafeIdentifier(string value)
+        {
+            return Regex.IsMatch(value, "^[A-Za-z_][A-Za-z0-9_]*$");
         }
 
         private static void EnsureLookupOptionsTable(StudentsManagerDbContext context)
@@ -211,10 +280,10 @@ CREATE TABLE IF NOT EXISTS LookupOptions (
                 return;
             }
 
-            context.FamilyInfos.Add(new FamilyInfo { StudentId = 1, RelationName = "张父", Relationship = "父亲", PhoneNumber = "13900139001", WorkUnit = "某公司", Address = "北京市海淀区" });
-            context.RewardRecords.Add(new RewardRecord { StudentId = 1, RewardDate = DateTime.Now.AddMonths(-2), RewardType = "奖学金", RewardLevel = "一等奖", RewardReason = "成绩优异", RewardUnit = "学校" });
-            context.PunishmentRecords.Add(new PunishmentRecord { StudentId = 2, PunishmentDate = DateTime.Now.AddMonths(-1), PunishmentType = "警告", PunishmentLevel = "一般", PunishmentReason = "课堂违纪", Status = "未撤销" });
-            context.HealthRecords.Add(new HealthRecord { StudentId = 1, CheckDate = DateTime.Now.AddMonths(-3), Height = 175.2m, Weight = 68.5m, BloodType = "A", Vision = "5.0", HealthStatus = "正常", Remarks = "体检合格" });
+            context.FamilyInfos.Add(new FamilyInfo { StudentId = 1, StudentNo = "2024001", RelationName = "张父", Relationship = "父亲", PhoneNumber = "13900139001", WorkUnit = "某公司", Address = "北京市海淀区" });
+            context.RewardRecords.Add(new RewardRecord { StudentId = 1, StudentNo = "2024001", RewardDate = DateTime.Now.AddMonths(-2), RewardType = "奖学金", RewardLevel = "一等奖", RewardReason = "成绩优异", RewardUnit = "学校" });
+            context.PunishmentRecords.Add(new PunishmentRecord { StudentId = 2, StudentNo = "2024002", PunishmentDate = DateTime.Now.AddMonths(-1), PunishmentType = "警告", PunishmentLevel = "一般", PunishmentReason = "课堂违纪", Status = "未撤销" });
+            context.HealthRecords.Add(new HealthRecord { StudentId = 1, StudentNo = "2024001", CheckDate = DateTime.Now.AddMonths(-3), Height = 175.2m, Weight = 68.5m, BloodType = "A", Vision = "5.0", HealthStatus = "正常", Remarks = "体检合格" });
             context.StudentRegistrations.Add(new StudentRegistration { StudentId = 1, StudentNo = "2024001", StudentName = "张三", RegistrationDate = DateTime.Now.Date, AcademicYear = "2024", Semester = "第一学期", Status = "已注册", Remarks = "示例数据" });
             context.StatusChangeRecords.Add(new StatusChangeRecord { StudentId = 2, StudentNo = "2024002", StudentName = "李四", ChangeDate = DateTime.Now.AddMonths(-1).Date, ChangeType = "休学", OriginalInfo = "在校", NewInfo = "休学", Reason = "个人原因", ApprovalStatus = "已批准" });
             context.ScholarshipInfos.Add(new ScholarshipInfo { StudentId = 1, StudentNo = "2024001", StudentName = "张三", AcademicYear = "2024", Semester = "第一学期", ScholarshipType = "国家励志奖学金", ScholarshipLevel = "一等奖", Amount = 8000m, AwardDate = DateTime.Now.AddMonths(-1).Date, Status = "已发放" });

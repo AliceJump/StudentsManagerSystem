@@ -30,6 +30,7 @@ namespace StudentsManagerSystem.Models
     {
         public int Id { get; set; }
         public int StudentId { get; set; }
+        public string StudentNo { get; set; } = string.Empty;
         public string RelationName { get; set; } = string.Empty;
         public string Relationship { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
@@ -44,6 +45,7 @@ namespace StudentsManagerSystem.Models
     {
         public int Id { get; set; }
         public int StudentId { get; set; }
+        public string StudentNo { get; set; } = string.Empty;
         public DateTime? RewardDate { get; set; }
         public string RewardType { get; set; } = string.Empty;
         public string RewardLevel { get; set; } = string.Empty;
@@ -58,6 +60,7 @@ namespace StudentsManagerSystem.Models
     {
         public int Id { get; set; }
         public int StudentId { get; set; }
+        public string StudentNo { get; set; } = string.Empty;
         public DateTime? PunishmentDate { get; set; }
         public string PunishmentType { get; set; } = string.Empty;
         public string PunishmentLevel { get; set; } = string.Empty;
@@ -73,6 +76,7 @@ namespace StudentsManagerSystem.Models
     {
         public int Id { get; set; }
         public int StudentId { get; set; }
+        public string StudentNo { get; set; } = string.Empty;
         public DateTime? CheckDate { get; set; }
         public decimal Height { get; set; }
         public decimal Weight { get; set; }

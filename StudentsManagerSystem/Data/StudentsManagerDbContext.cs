@@ -80,6 +80,8 @@ namespace StudentsManagerSystem.Data
             {
                 entity.ToTable("FamilyInfos");
                 entity.HasKey(x => x.Id);
+                entity.HasIndex(x => x.StudentNo);
+                entity.Property(x => x.StudentNo).HasMaxLength(50).IsRequired();
                 entity.Property(x => x.RelationName).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.Relationship).HasMaxLength(50).IsRequired();
                 entity.Property(x => x.PhoneNumber).HasMaxLength(50);
@@ -91,6 +93,8 @@ namespace StudentsManagerSystem.Data
             {
                 entity.ToTable("RewardRecords");
                 entity.HasKey(x => x.Id);
+                entity.HasIndex(x => x.StudentNo);
+                entity.Property(x => x.StudentNo).HasMaxLength(50).IsRequired();
                 entity.Property(x => x.RewardType).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.RewardLevel).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.RewardReason).HasMaxLength(200);
@@ -101,6 +105,8 @@ namespace StudentsManagerSystem.Data
             {
                 entity.ToTable("PunishmentRecords");
                 entity.HasKey(x => x.Id);
+                entity.HasIndex(x => x.StudentNo);
+                entity.Property(x => x.StudentNo).HasMaxLength(50).IsRequired();
                 entity.Property(x => x.PunishmentType).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.PunishmentLevel).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.PunishmentReason).HasMaxLength(200);
@@ -111,6 +117,8 @@ namespace StudentsManagerSystem.Data
             {
                 entity.ToTable("HealthRecords");
                 entity.HasKey(x => x.Id);
+                entity.HasIndex(x => x.StudentNo);
+                entity.Property(x => x.StudentNo).HasMaxLength(50).IsRequired();
                 entity.Property(x => x.Height).HasPrecision(6, 2);
                 entity.Property(x => x.Weight).HasPrecision(6, 2);
                 entity.Property(x => x.BloodType).HasMaxLength(20).IsRequired();

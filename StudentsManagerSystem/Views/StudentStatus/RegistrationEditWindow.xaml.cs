@@ -1,14 +1,14 @@
 using System;
 using System.Windows;
 using StudentsManagerSystem.Common;
-using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
+using StudentsManagerSystem.Services;
 
 namespace StudentsManagerSystem.Views.StudentStatus
 {
     public partial class RegistrationEditWindow : Window
     {
-        private readonly StudentStatusRepository repository = new StudentStatusRepository();
+        private readonly StudentStatusService studentStatusService = new StudentStatusService();
         private StudentRegistration model;
 
         public StudentRegistration Result => model;
@@ -96,25 +96,14 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
             try
             {
-                if (model.Id != 0 && !repository.RegistrationExists(model.Id))
+                var result = studentStatusService.SaveRegistration(model);
+                if (!result.Succeeded)
                 {
-                    MessageBox.Show("当前记录已不存在，请刷新后重试", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(result.Message, "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                if (repository.RegistrationDuplicateExists(model))
-                {
-                    MessageBox.Show("该学号已经存在登记记录", "验证", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-                if (model.Id == 0)
-                {
-                    var id = repository.AddRegistration(model);
-                    model.Id = id;
-                }
-                else
-                {
-                    repository.UpdateRegistration(model);
-                }
+
+                model.Id = result.Data;
 
                 DialogResult = true;
                 Close();

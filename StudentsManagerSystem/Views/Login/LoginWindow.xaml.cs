@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 using StudentsManagerSystem.Common;
-using StudentsManagerSystem.Data.SqlServer;
+using StudentsManagerSystem.Data.Repositories;
 
 namespace StudentsManagerSystem.Views.Login
 {

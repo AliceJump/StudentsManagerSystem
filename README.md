@@ -23,6 +23,8 @@
 
 系统采用"主界面 + 子窗口"的结构设计：
 
+数据库表结构、业务键和关联规则见：`docs/DatabaseDesign.md`。
+
 ```
 StudentsManagerSystem/
 ├── Models/                    # 数据模型
@@ -31,7 +33,8 @@ StudentsManagerSystem/
 │   ├── Score.cs              # 成绩相关模型
 │   └── BasicData.cs          # 基础数据模型
 ├── Data/                      # EF Core 上下文、数据库配置、种子初始化
-├── Data/SqlServer/            # 现有 Repository 实现（当前通过 EF Core 访问 SQLite）
+├── Data/Repositories/         # Repository 实现（当前通过 EF Core 访问 SQLite）
+├── Data/Migrations/           # EF Core Migration
 ├── Services/                  # 业务逻辑层与统一业务结果
 ├── Common/                    # 命令、验证、日志、CSV 等通用能力
 ├── Views/                     # 视图界面

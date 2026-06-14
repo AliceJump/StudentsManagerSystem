@@ -22,8 +22,8 @@
 - EF Core 上下文：`StudentsManagerSystem/Data/StudentsManagerDbContext.cs`
 - 数据库配置：`StudentsManagerSystem/Data/DatabaseConfiguration.cs`
 - 数据库初始化与种子数据：`StudentsManagerSystem/Data/DatabaseInitializer.cs`
-- Repository：`StudentsManagerSystem/Data/SqlServer/*Repository.cs`
-- 说明：`Data/SqlServer` 是历史目录名，当前 Repository 实际通过 EF Core 访问 SQLite。
+- Repository：`StudentsManagerSystem/Data/Repositories/*Repository.cs`
+- 说明：Repository 实际通过 EF Core 访问 SQLite。
 
 ### 3.3 业务架构
 
@@ -101,7 +101,7 @@
 
 - `StudentsManagerSystem/Views/Login/LoginWindow.xaml`
 - `StudentsManagerSystem/Views/Login/LoginWindow.xaml.cs`
-- `StudentsManagerSystem/Data/SqlServer/UsersRepository.cs`
+- `StudentsManagerSystem/Data/Repositories/UsersRepository.cs`
 - `StudentsManagerSystem/Models/User.cs`
 - `StudentsManagerSystem/App.xaml.cs`
 
@@ -183,6 +183,7 @@
 
 - 页面和数据模型已存在。
 - 当前页面从数据库读取由 `DatabaseInitializer` 维护的初始化示例数据。
+- 家庭、奖励、处分、体检列表统一展示学号，不展示学生内部 ID。
 - 新增、修改、删除、搜索暂未完整接入数据库。
 
 #### 6.4.2 后续边界
@@ -200,7 +201,7 @@
 - `StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml.cs`
 - `StudentsManagerSystem/Models/Student.cs`
 - `StudentsManagerSystem/Services/StudentService.cs`
-- `StudentsManagerSystem/Data/SqlServer/StudentRepository.cs`
+- `StudentsManagerSystem/Data/Repositories/StudentRepository.cs`
 
 ## 7. 学生学籍管理模块
 
@@ -266,7 +267,7 @@
 - `StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml`
 - `StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml.cs`
 - `StudentsManagerSystem/Models/StudentStatus.cs`
-- `StudentsManagerSystem/Data/SqlServer/StudentStatusRepository.cs`
+- `StudentsManagerSystem/Data/Repositories/StudentStatusRepository.cs`
 
 ### 7.8 功能边界
 
@@ -331,7 +332,7 @@
 - `StudentsManagerSystem/Views/Score/ScoreEditWindow.xaml.cs`
 - `StudentsManagerSystem/Models/Score.cs`
 - `StudentsManagerSystem/Services/ScoreService.cs`
-- `StudentsManagerSystem/Data/SqlServer/ScoreRepository.cs`
+- `StudentsManagerSystem/Data/Repositories/ScoreRepository.cs`
 
 ### 8.7 功能边界
 
@@ -386,7 +387,7 @@
 - `StudentsManagerSystem/Views/BasicData/BasicDataEditWindow.xaml.cs`
 - `StudentsManagerSystem/Models/BasicData.cs`
 - `StudentsManagerSystem/Services/BasicDataService.cs`
-- `StudentsManagerSystem/Data/SqlServer/BasicDataRepository.cs`
+- `StudentsManagerSystem/Data/Repositories/BasicDataRepository.cs`
 
 ### 9.7 功能边界
 
@@ -523,7 +524,7 @@
 
 ### 12.5 功能边界
 
-- 当前没有日志查看界面。
+- 当前提供日志查看界面，显示当前日志最近 500 行。
 - 当前没有日志分级配置、滚动切分和保留策略。
 
 ## 13. 导入导出模块
@@ -601,7 +602,7 @@
 | 成绩管理 | 已接入真实 CRUD 和 CSV | 图表、Excel/PDF/打印 |
 | 基础数据 | 已接入真实 CRUD | 导入导出、关联数据一致性处理 |
 | 查询统计 | 部分实现 | 图表、更多组合条件 |
-| 日志 | 部分实现 | 日志查看、滚动策略 |
+| 日志 | 已实现基础能力 | 后续可补日志筛选、日志级别配置 |
 
 ## 16. 后续开发原则
 

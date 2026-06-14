@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentsManagerSystem.Data;
 using StudentsManagerSystem.Models;
 
-namespace StudentsManagerSystem.Data.SqlServer
+namespace StudentsManagerSystem.Data.Repositories
 {
     /// <summary>
     /// 学生信息仓储。
@@ -50,25 +50,25 @@ namespace StudentsManagerSystem.Data.SqlServer
         public List<FamilyInfo> GetFamilyInfos()
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
-            return context.FamilyInfos.AsNoTracking().OrderBy(item => item.StudentId).ThenBy(item => item.RelationName).ToList();
+            return context.FamilyInfos.AsNoTracking().OrderBy(item => item.StudentNo).ThenBy(item => item.RelationName).ToList();
         }
 
         public List<RewardRecord> GetRewardRecords()
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
-            return context.RewardRecords.AsNoTracking().OrderByDescending(item => item.RewardDate).ThenBy(item => item.StudentId).ToList();
+            return context.RewardRecords.AsNoTracking().OrderByDescending(item => item.RewardDate).ThenBy(item => item.StudentNo).ToList();
         }
 
         public List<PunishmentRecord> GetPunishmentRecords()
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
-            return context.PunishmentRecords.AsNoTracking().OrderByDescending(item => item.PunishmentDate).ThenBy(item => item.StudentId).ToList();
+            return context.PunishmentRecords.AsNoTracking().OrderByDescending(item => item.PunishmentDate).ThenBy(item => item.StudentNo).ToList();
         }
 
         public List<HealthRecord> GetHealthRecords()
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
-            return context.HealthRecords.AsNoTracking().OrderByDescending(item => item.CheckDate).ThenBy(item => item.StudentId).ToList();
+            return context.HealthRecords.AsNoTracking().OrderByDescending(item => item.CheckDate).ThenBy(item => item.StudentNo).ToList();
         }
 
         public int Add(Student student)
@@ -110,10 +110,10 @@ namespace StudentsManagerSystem.Data.SqlServer
                 return;
             }
 
-            context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentId == id));
-            context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentId == id));
-            context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentId == id));
-            context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentId == id));
+            context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentNo == student.StudentNo));
+            context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentNo == student.StudentNo));
+            context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentNo == student.StudentNo));
+            context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentNo == student.StudentNo));
             context.StudentRegistrations.RemoveRange(context.StudentRegistrations.Where(item => item.StudentId == id));
             context.StatusChangeRecords.RemoveRange(context.StatusChangeRecords.Where(item => item.StudentId == id));
             context.ScholarshipInfos.RemoveRange(context.ScholarshipInfos.Where(item => item.StudentId == id));
@@ -132,10 +132,10 @@ namespace StudentsManagerSystem.Data.SqlServer
                 return;
             }
 
-            context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentId == id));
-            context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentId == id));
-            context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentId == id));
-            context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentId == id));
+            context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentNo == student.StudentNo));
+            context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentNo == student.StudentNo));
+            context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentNo == student.StudentNo));
+            context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentNo == student.StudentNo));
             context.StudentRegistrations.RemoveRange(context.StudentRegistrations.Where(item => item.StudentId == id));
             context.StatusChangeRecords.RemoveRange(context.StatusChangeRecords.Where(item => item.StudentId == id));
             context.ScholarshipInfos.RemoveRange(context.ScholarshipInfos.Where(item => item.StudentId == id));

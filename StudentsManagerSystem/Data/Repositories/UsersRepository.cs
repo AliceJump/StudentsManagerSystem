@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using StudentsManagerSystem.Data;
 
-namespace StudentsManagerSystem.Data.SqlServer
+namespace StudentsManagerSystem.Data.Repositories
 {
     /// <summary>
     /// 用户仓储。

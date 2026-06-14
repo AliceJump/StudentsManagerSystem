@@ -1,6 +1,6 @@
 # 学生管理 - 增删改查
 
-当前学生基本信息管理采用 `StudentArchiveView` + `StudentService` + `StudentRepository` 的调用链路。数据库为 SQLite，数据访问通过 EF Core 完成；`Data/SqlServer` 目录名称为历史遗留命名，当前仓储实际通过 `StudentsManagerDbContextFactory` 创建 EF Core 上下文。
+当前学生基本信息管理采用 `StudentArchiveView` + `StudentService` + `StudentRepository` 的调用链路。数据库为 SQLite，数据访问通过 EF Core 完成；当前仓储位于 `Data/Repositories`，通过 `StudentsManagerDbContextFactory` 创建 EF Core 上下文。
 
 ## 查询（Read）
 ```csharp
@@ -56,10 +56,10 @@ public void Delete(int id)
     var student = context.Students.FirstOrDefault(item => item.Id == id);
     if (student == null) return;
 
-    context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentId == id));
-    context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentId == id));
-    context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentId == id));
-    context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentId == id));
+    context.FamilyInfos.RemoveRange(context.FamilyInfos.Where(item => item.StudentNo == student.StudentNo));
+    context.RewardRecords.RemoveRange(context.RewardRecords.Where(item => item.StudentNo == student.StudentNo));
+    context.PunishmentRecords.RemoveRange(context.PunishmentRecords.Where(item => item.StudentNo == student.StudentNo));
+    context.HealthRecords.RemoveRange(context.HealthRecords.Where(item => item.StudentNo == student.StudentNo));
     context.StudentRegistrations.RemoveRange(context.StudentRegistrations.Where(item => item.StudentId == id));
     context.StatusChangeRecords.RemoveRange(context.StatusChangeRecords.Where(item => item.StudentId == id));
     context.ScholarshipInfos.RemoveRange(context.ScholarshipInfos.Where(item => item.StudentId == id));
@@ -126,6 +126,6 @@ CsvExportHelper.ExportToCsv(SortStudents(filteredStudents), dialog.FileName);
 ## 关键点
 - 查询通过 EF Core LINQ 和 `EF.Functions.Like` 生成参数化 SQL
 - 新增、修改、删除通过 `StudentService` 统一做业务校验和日志记录
-- 删除学生时会清理关联档案、学籍、奖助、毕业、成绩等数据
+- 删除学生时会按学号清理家庭、奖励、处分、体检档案，并清理关联学籍、奖助、毕业、成绩等数据
 - 学生基本信息页面支持搜索、排序、分页、CSV 导入和 CSV 导出
 - `using` 自动释放 EF Core `DbContext` 资源

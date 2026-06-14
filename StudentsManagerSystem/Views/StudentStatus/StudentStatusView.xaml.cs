@@ -1,14 +1,14 @@
 using System.Windows;
 using System.Windows.Controls;
 using StudentsManagerSystem.Common;
-using StudentsManagerSystem.Data.SqlServer;
 using StudentsManagerSystem.Models;
+using StudentsManagerSystem.Services;
 
 namespace StudentsManagerSystem.Views.StudentStatus
 {
     public partial class StudentStatusView : Page
     {
-        private readonly StudentStatusRepository repository = new StudentStatusRepository();
+        private readonly StudentStatusService studentStatusService = new StudentStatusService();
 
         public StudentStatusView()
         {
@@ -46,9 +46,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
         private void LoadRegistrationData()
         {
             var keyword = GetKeyword();
-            var items = string.IsNullOrWhiteSpace(keyword)
-                ? repository.GetRegistrations()
-                : repository.SearchRegistrations(keyword);
+            var items = studentStatusService.GetRegistrations(keyword);
 
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
@@ -67,9 +65,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
         private void LoadChangeData()
         {
             var keyword = GetKeyword();
-            var items = string.IsNullOrWhiteSpace(keyword)
-                ? repository.GetChanges()
-                : repository.SearchChanges(keyword);
+            var items = studentStatusService.GetChanges(keyword);
 
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
@@ -89,9 +85,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
         private void LoadScholarshipData()
         {
             var keyword = GetKeyword();
-            var items = string.IsNullOrWhiteSpace(keyword)
-                ? repository.GetScholarships()
-                : repository.SearchScholarships(keyword);
+            var items = studentStatusService.GetScholarships(keyword);
 
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
@@ -112,9 +106,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
         private void LoadGraduationData()
         {
             var keyword = GetKeyword();
-            var items = string.IsNullOrWhiteSpace(keyword)
-                ? repository.GetGraduations()
-                : repository.SearchGraduations(keyword);
+            var items = studentStatusService.GetGraduations(keyword);
 
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
@@ -209,19 +201,19 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
             if (tabControl.SelectedIndex == 0 && dataGrid.SelectedItem is StudentRegistration registration)
             {
-                repository.DeleteRegistration(registration.Id);
+                studentStatusService.DeleteRegistration(registration.Id);
             }
             else if (tabControl.SelectedIndex == 1 && dataGrid.SelectedItem is StatusChangeRecord change)
             {
-                repository.DeleteChange(change.Id);
+                studentStatusService.DeleteChange(change.Id);
             }
             else if (tabControl.SelectedIndex == 2 && dataGrid.SelectedItem is ScholarshipInfo scholarship)
             {
-                repository.DeleteScholarship(scholarship.Id);
+                studentStatusService.DeleteScholarship(scholarship.Id);
             }
             else if (tabControl.SelectedIndex == 3 && dataGrid.SelectedItem is GraduationInfo graduation)
             {
-                repository.DeleteGraduation(graduation.Id);
+                studentStatusService.DeleteGraduation(graduation.Id);
             }
 
             LoadCurrentTabData();

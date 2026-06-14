@@ -111,7 +111,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
-            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学生ID", Binding = new System.Windows.Data.Binding("StudentId"), Width = new DataGridLength(80) });
+            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "关系人姓名", Binding = new System.Windows.Data.Binding("RelationName"), Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "关系", Binding = new System.Windows.Data.Binding("Relationship"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "联系电话", Binding = new System.Windows.Data.Binding("PhoneNumber"), Width = new DataGridLength(150) });
@@ -127,7 +127,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
-            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学生ID", Binding = new System.Windows.Data.Binding("StudentId"), Width = new DataGridLength(80) });
+            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "奖励日期", Binding = new System.Windows.Data.Binding("RewardDate") { StringFormat = "yyyy-MM-dd" }, Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "奖励类型", Binding = new System.Windows.Data.Binding("RewardType"), Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "奖励等级", Binding = new System.Windows.Data.Binding("RewardLevel"), Width = new DataGridLength(120) });
@@ -143,7 +143,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
-            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学生ID", Binding = new System.Windows.Data.Binding("StudentId"), Width = new DataGridLength(80) });
+            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "处分日期", Binding = new System.Windows.Data.Binding("PunishmentDate") { StringFormat = "yyyy-MM-dd" }, Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "处分类型", Binding = new System.Windows.Data.Binding("PunishmentType"), Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "处分等级", Binding = new System.Windows.Data.Binding("PunishmentLevel"), Width = new DataGridLength(120) });
@@ -160,7 +160,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
             dataGrid.ItemsSource = null;
             dataGrid.Columns.Clear();
             
-            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学生ID", Binding = new System.Windows.Data.Binding("StudentId"), Width = new DataGridLength(80) });
+            dataGrid.Columns.Add(new DataGridTextColumn { Header = "学号", Binding = new System.Windows.Data.Binding("StudentNo"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "体检日期", Binding = new System.Windows.Data.Binding("CheckDate") { StringFormat = "yyyy-MM-dd" }, Width = new DataGridLength(120) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "身高(cm)", Binding = new System.Windows.Data.Binding("Height"), Width = new DataGridLength(100) });
             dataGrid.Columns.Add(new DataGridTextColumn { Header = "体重(kg)", Binding = new System.Windows.Data.Binding("Weight"), Width = new DataGridLength(100) });
