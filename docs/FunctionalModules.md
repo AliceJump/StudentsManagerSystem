@@ -115,7 +115,7 @@
 
 ### 6.1 模块职责
 
-学生档案管理用于维护学生基本信息，并展示家庭信息、奖励记录、处分记录和体检信息。
+学生档案管理用于维护学生基本信息、家庭信息、奖励记录、处分记录和体检信息。
 
 ### 6.2 子模块
 
@@ -181,20 +181,23 @@
 
 #### 6.4.1 当前能力
 
-- 页面和数据模型已存在。
-- 当前页面从数据库读取由 `DatabaseInitializer` 维护的初始化示例数据。
+- 页面和数据模型已存在，数据通过 SQLite 持久化。
+- 当前页面从数据库读取列表数据，初始化示例数据由 `DatabaseInitializer` 维护。
 - 家庭、奖励、处分、体检列表统一展示学号，不展示学生内部 ID。
-- 新增、修改、删除、搜索暂未完整接入数据库。
+- 支持新增、修改、删除和查看详情。
+- 保存时通过 `StudentService` 校验学号存在性和必填字段，并写入业务日志。
 
-#### 6.4.2 后续边界
+#### 6.4.2 功能边界
 
-- 后续应按学生基本信息同样的 Repository + Service + Window 流程接入 CRUD。
 - 不应绕过现有数据层直接在页面中写数据库。
+- 当前未实现家庭、奖励、处分、体检子模块的独立搜索、排序、分页和导入导出。
 
 ### 6.5 实现文件
 
 - `StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml`
 - `StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml.cs`
+- `StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml`
+- `StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml.cs`
 - `StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml`
 - `StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml.cs`
 - `StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml`
@@ -594,10 +597,10 @@
 | 主界面 | 已实现 | 首页内容可继续丰富 |
 | 登录与权限 | 部分实现 | 用户管理、密码修改、细粒度权限 |
 | 学生基本信息 | 已接入真实 CRUD | Excel/PDF/打印 |
-| 家庭信息 | 示例展示 | 完整 CRUD、搜索、导入导出 |
-| 奖励记录 | 示例展示 | 完整 CRUD、搜索、导入导出 |
-| 处分记录 | 示例展示 | 完整 CRUD、搜索、导入导出 |
-| 体检信息 | 示例展示 | 完整 CRUD、搜索、导入导出 |
+| 家庭信息 | 已接入真实 CRUD | 搜索、导入导出 |
+| 奖励记录 | 已接入真实 CRUD | 搜索、导入导出 |
+| 处分记录 | 已接入真实 CRUD | 搜索、导入导出 |
+| 体检信息 | 已接入真实 CRUD | 搜索、导入导出 |
 | 学籍管理 | 已接入真实 CRUD | Service 层统一、导入导出 |
 | 成绩管理 | 已接入真实 CRUD 和 CSV | 图表、Excel/PDF/打印 |
 | 基础数据 | 已接入真实 CRUD | 导入导出、关联数据一致性处理 |

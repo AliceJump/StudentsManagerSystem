@@ -1,6 +1,6 @@
 # 学生管理 - 增删改查
 
-当前学生基本信息管理采用 `StudentArchiveView` + `StudentService` + `StudentRepository` 的调用链路。数据库为 SQLite，数据访问通过 EF Core 完成；当前仓储位于 `Data/Repositories`，通过 `StudentsManagerDbContextFactory` 创建 EF Core 上下文。
+当前学生档案管理采用 `StudentArchiveView` + `StudentService` + `StudentRepository` 的调用链路。数据库为 SQLite，数据访问通过 EF Core 完成；当前仓储位于 `Data/Repositories`，通过 `StudentsManagerDbContextFactory` 创建 EF Core 上下文。
 
 ## 查询（Read）
 ```csharp
@@ -27,6 +27,8 @@ public List<Student> Search(string keyword)
 }
 ```
 
+家庭信息、奖励记录、处分记录和体检信息通过 `GetFamilyInfos()`、`GetRewardRecords()`、`GetPunishmentRecords()`、`GetHealthRecords()` 读取数据库列表。
+
 ## 新增（Create）
 ```csharp
 public int Add(Student student)
@@ -47,6 +49,8 @@ public void Update(Student student)
     context.SaveChanges();
 }
 ```
+
+学生档案子表新增和修改共用保存方法：`SaveFamilyInfo`、`SaveRewardRecord`、`SavePunishmentRecord`、`SaveHealthRecord`。保存前由 `StudentService` 校验学号存在性、必填字段和格式，保存后写入业务日志。
 
 ## 删除（Delete - 删除关联数据）
 ```csharp
@@ -95,6 +99,8 @@ private void btnAdd_Click(object sender, RoutedEventArgs e)
 }
 ```
 
+家庭、奖励、处分、体检子模块共用 `ArchiveRecordEditWindow`，由当前 Tab 决定表单字段和保存目标。
+
 **删除**
 ```csharp
 if (MessageBox.Show("确认删除吗?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
@@ -128,4 +134,5 @@ CsvExportHelper.ExportToCsv(SortStudents(filteredStudents), dialog.FileName);
 - 新增、修改、删除通过 `StudentService` 统一做业务校验和日志记录
 - 删除学生时会按学号清理家庭、奖励、处分、体检档案，并清理关联学籍、奖助、毕业、成绩等数据
 - 学生基本信息页面支持搜索、排序、分页、CSV 导入和 CSV 导出
+- 家庭、奖励、处分、体检支持新增、修改、删除和查看详情，当前未接入独立搜索、分页、导入导出
 - `using` 自动释放 EF Core `DbContext` 资源

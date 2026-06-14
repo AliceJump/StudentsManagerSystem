@@ -47,6 +47,12 @@ namespace StudentsManagerSystem.Data.Repositories
             return context.Students.AsNoTracking().FirstOrDefault(student => student.Id == id);
         }
 
+        public Student? GetByStudentNo(string studentNo)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.AsNoTracking().FirstOrDefault(student => student.StudentNo == studentNo);
+        }
+
         public List<FamilyInfo> GetFamilyInfos()
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
@@ -69,6 +75,114 @@ namespace StudentsManagerSystem.Data.Repositories
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
             return context.HealthRecords.AsNoTracking().OrderByDescending(item => item.CheckDate).ThenBy(item => item.StudentNo).ToList();
+        }
+
+        public int SaveFamilyInfo(FamilyInfo familyInfo)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            if (familyInfo.Id == 0)
+            {
+                context.FamilyInfos.Add(familyInfo);
+            }
+            else
+            {
+                context.FamilyInfos.Update(familyInfo);
+            }
+
+            context.SaveChanges();
+            return familyInfo.Id;
+        }
+
+        public int SaveRewardRecord(RewardRecord rewardRecord)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            if (rewardRecord.Id == 0)
+            {
+                context.RewardRecords.Add(rewardRecord);
+            }
+            else
+            {
+                context.RewardRecords.Update(rewardRecord);
+            }
+
+            context.SaveChanges();
+            return rewardRecord.Id;
+        }
+
+        public int SavePunishmentRecord(PunishmentRecord punishmentRecord)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            if (punishmentRecord.Id == 0)
+            {
+                context.PunishmentRecords.Add(punishmentRecord);
+            }
+            else
+            {
+                context.PunishmentRecords.Update(punishmentRecord);
+            }
+
+            context.SaveChanges();
+            return punishmentRecord.Id;
+        }
+
+        public int SaveHealthRecord(HealthRecord healthRecord)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            if (healthRecord.Id == 0)
+            {
+                context.HealthRecords.Add(healthRecord);
+            }
+            else
+            {
+                context.HealthRecords.Update(healthRecord);
+            }
+
+            context.SaveChanges();
+            return healthRecord.Id;
+        }
+
+        public void DeleteFamilyInfo(int id)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var item = context.FamilyInfos.FirstOrDefault(record => record.Id == id);
+            if (item != null)
+            {
+                context.FamilyInfos.Remove(item);
+                context.SaveChanges();
+            }
+        }
+
+        public void DeleteRewardRecord(int id)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var item = context.RewardRecords.FirstOrDefault(record => record.Id == id);
+            if (item != null)
+            {
+                context.RewardRecords.Remove(item);
+                context.SaveChanges();
+            }
+        }
+
+        public void DeletePunishmentRecord(int id)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var item = context.PunishmentRecords.FirstOrDefault(record => record.Id == id);
+            if (item != null)
+            {
+                context.PunishmentRecords.Remove(item);
+                context.SaveChanges();
+            }
+        }
+
+        public void DeleteHealthRecord(int id)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var item = context.HealthRecords.FirstOrDefault(record => record.Id == id);
+            if (item != null)
+            {
+                context.HealthRecords.Remove(item);
+                context.SaveChanges();
+            }
         }
 
         public int Add(Student student)

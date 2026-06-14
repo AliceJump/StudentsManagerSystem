@@ -176,7 +176,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
         {
             if (tabControl.SelectedIndex != 0)
             {
-                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                EditArchiveRecord(null);
                 return;
             }
 
@@ -200,7 +200,13 @@ namespace StudentsManagerSystem.Views.StudentArchive
         {
             if (tabControl.SelectedIndex != 0)
             {
-                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (dataGrid.SelectedItem == null)
+                {
+                    MessageBox.Show("请先选择要修改的记录！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                EditArchiveRecord(dataGrid.SelectedItem);
                 return;
             }
 
@@ -231,7 +237,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
         {
             if (tabControl.SelectedIndex != 0)
             {
-                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                DeleteArchiveRecord();
                 return;
             }
 
@@ -255,7 +261,13 @@ namespace StudentsManagerSystem.Views.StudentArchive
         {
             if (tabControl.SelectedIndex != 0)
             {
-                MessageBox.Show("当前数据库功能已接入学生基本信息模块。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (dataGrid.SelectedItem == null)
+                {
+                    MessageBox.Show("请先选择要查看的记录！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                MessageBox.Show(BuildArchiveRecordDetail(dataGrid.SelectedItem), "记录详情", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -286,6 +298,100 @@ namespace StudentsManagerSystem.Views.StudentArchive
             }
 
             MessageBox.Show("当前仅为学生基本信息模块接入了数据库搜索。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void EditArchiveRecord(object? record)
+        {
+            var window = new ArchiveRecordEditWindow(tabControl.SelectedIndex, record);
+            if (window.ShowDialog() != true || window.ResultRecord == null)
+            {
+                return;
+            }
+
+            var saveResult = SaveArchiveRecord(window.ResultRecord);
+            if (saveResult.Succeeded)
+            {
+                MessageBox.Show(saveResult.Message, "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                LoadCurrentArchiveTab();
+            }
+            else
+            {
+                MessageBox.Show(saveResult.Message, "验证失败", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private ServiceResult SaveArchiveRecord(object record)
+        {
+            return record switch
+            {
+                FamilyInfo familyInfo => ToServiceResult(studentService.SaveFamilyInfo(familyInfo)),
+                RewardRecord rewardRecord => ToServiceResult(studentService.SaveRewardRecord(rewardRecord)),
+                PunishmentRecord punishmentRecord => ToServiceResult(studentService.SavePunishmentRecord(punishmentRecord)),
+                HealthRecord healthRecord => ToServiceResult(studentService.SaveHealthRecord(healthRecord)),
+                _ => ServiceResult.Failure("不支持的档案记录类型")
+            };
+        }
+
+        private static ServiceResult ToServiceResult<T>(ServiceResult<T> result)
+        {
+            return result.Succeeded ? ServiceResult.Success(result.Message) : ServiceResult.Failure(result.Message);
+        }
+
+        private void DeleteArchiveRecord()
+        {
+            if (dataGrid.SelectedItem == null)
+            {
+                MessageBox.Show("请先选择要删除的记录！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show("确定要删除选中的记录吗？", "确认删除", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            switch (dataGrid.SelectedItem)
+            {
+                case FamilyInfo familyInfo:
+                    studentService.DeleteFamilyInfo(familyInfo.Id);
+                    break;
+                case RewardRecord rewardRecord:
+                    studentService.DeleteRewardRecord(rewardRecord.Id);
+                    break;
+                case PunishmentRecord punishmentRecord:
+                    studentService.DeletePunishmentRecord(punishmentRecord.Id);
+                    break;
+                case HealthRecord healthRecord:
+                    studentService.DeleteHealthRecord(healthRecord.Id);
+                    break;
+            }
+
+            LoadCurrentArchiveTab();
+        }
+
+        private void LoadCurrentArchiveTab()
+        {
+            if (tabControl.SelectedIndex == 1)
+                LoadFamilyData();
+            else if (tabControl.SelectedIndex == 2)
+                LoadRewardData();
+            else if (tabControl.SelectedIndex == 3)
+                LoadPunishmentData();
+            else if (tabControl.SelectedIndex == 4)
+                LoadHealthData();
+        }
+
+        private static string BuildArchiveRecordDetail(object record)
+        {
+            return record switch
+            {
+                FamilyInfo item => $"学号：{item.StudentNo}\n关系人姓名：{item.RelationName}\n关系：{item.Relationship}\n联系电话：{item.PhoneNumber}\n工作单位：{item.WorkUnit}\n地址：{item.Address}",
+                RewardRecord item => $"学号：{item.StudentNo}\n奖励日期：{item.RewardDate:yyyy-MM-dd}\n奖励类型：{item.RewardType}\n奖励等级：{item.RewardLevel}\n奖励原因：{item.RewardReason}\n颁发单位：{item.RewardUnit}",
+                PunishmentRecord item => $"学号：{item.StudentNo}\n处分日期：{item.PunishmentDate:yyyy-MM-dd}\n处分类型：{item.PunishmentType}\n处分等级：{item.PunishmentLevel}\n处分原因：{item.PunishmentReason}\n撤销日期：{item.CancelDate:yyyy-MM-dd}\n状态：{item.Status}",
+                HealthRecord item => $"学号：{item.StudentNo}\n体检日期：{item.CheckDate:yyyy-MM-dd}\n身高：{item.Height} cm\n体重：{item.Weight} kg\n血型：{item.BloodType}\n视力：{item.Vision}\n健康状况：{item.HealthStatus}\n备注：{item.Remarks}",
+                _ => "不支持的档案记录类型"
+            };
         }
 
         private void cmbSort_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -349,8 +455,8 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
             try
             {
-                var importedStudents = ImportStudents(dialog.FileName);
-                foreach (var student in importedStudents)
+                var importResult = ImportStudents(dialog.FileName);
+                foreach (var student in importResult.Students)
                 {
                     var saveResult = studentService.SaveImported(student);
                     if (!saveResult.Succeeded)
@@ -359,9 +465,9 @@ namespace StudentsManagerSystem.Views.StudentArchive
                     }
                 }
 
-                AppLogger.Info($"导入学生基本信息：{importedStudents.Count} 条，文件={dialog.FileName}");
+                AppLogger.Info($"导入学生基本信息：{importResult.Students.Count} 条，跳过 {importResult.SkippedRows} 条，文件={dialog.FileName}");
                 LoadStudentData();
-                MessageBox.Show($"成功导入 {importedStudents.Count} 条学生记录。", "导入完成", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"成功处理 {importResult.Students.Count} 条学生记录，跳过 {importResult.SkippedRows} 条无效记录。\n导入规则：学号存在则更新，不存在则新增。", "导入完成", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -403,15 +509,18 @@ namespace StudentsManagerSystem.Views.StudentArchive
             }
         }
 
-        private static List<Student> ImportStudents(string filePath)
+        private static CsvImportResult ImportStudents(string filePath)
         {
             var lines = File.ReadAllLines(filePath);
             if (lines.Length <= 1)
             {
-                return new List<Student>();
+                return new CsvImportResult(new List<Student>(), 0);
             }
 
+            var headerColumns = SplitCsvLine(lines[0]).Select((value, index) => (Value: value.TrimStart('\uFEFF'), Index: index))
+                .ToDictionary(item => item.Value, item => item.Index, StringComparer.OrdinalIgnoreCase);
             var imported = new List<Student>();
+            var skippedRows = 0;
             for (var index = 1; index < lines.Length; index++)
             {
                 var rawLine = lines[index].Trim();
@@ -421,33 +530,69 @@ namespace StudentsManagerSystem.Views.StudentArchive
                 }
 
                 var columns = SplitCsvLine(rawLine);
-                if (columns.Count < 15)
+                if (!TryParseStudent(columns, headerColumns, out var student))
                 {
+                    skippedRows++;
                     continue;
                 }
 
-                var baseIndex = columns.Count >= 16 ? 1 : 0;
-                imported.Add(new Student
-                {
-                    StudentNo = GetColumn(columns, baseIndex),
-                    Name = GetColumn(columns, baseIndex + 1),
-                    Gender = GetColumn(columns, baseIndex + 2),
-                    BirthDate = ParseDate(columns, baseIndex + 3),
-                    IdCard = GetColumn(columns, baseIndex + 4),
-                    Nation = GetColumn(columns, baseIndex + 5),
-                    PoliticalStatus = GetColumn(columns, baseIndex + 6),
-                    PhoneNumber = GetColumn(columns, baseIndex + 7),
-                    Email = GetColumn(columns, baseIndex + 8),
-                    Address = GetColumn(columns, baseIndex + 9),
-                    Department = GetColumn(columns, baseIndex + 10),
-                    Major = GetColumn(columns, baseIndex + 11),
-                    Class = GetColumn(columns, baseIndex + 12),
-                    EnrollmentDate = ParseDate(columns, baseIndex + 13),
-                    Photo = GetColumn(columns, baseIndex + 14)
-                });
+                imported.Add(student);
             }
 
-            return imported;
+            return new CsvImportResult(imported, skippedRows);
+        }
+
+        private static bool TryParseStudent(IReadOnlyList<string> columns, IReadOnlyDictionary<string, int> headers, out Student student)
+        {
+            student = new Student();
+
+            var studentNoIndex = ResolveColumnIndex(headers, columns.Count, "StudentNo", 0);
+            var nameIndex = ResolveColumnIndex(headers, columns.Count, "Name", 1);
+            var genderIndex = ResolveColumnIndex(headers, columns.Count, "Gender", 2);
+            var birthDateIndex = ResolveColumnIndex(headers, columns.Count, "BirthDate", 3);
+            var idCardIndex = ResolveColumnIndex(headers, columns.Count, "IdCard", 4);
+            var nationIndex = ResolveColumnIndex(headers, columns.Count, "Nation", 5);
+            var politicalStatusIndex = ResolveColumnIndex(headers, columns.Count, "PoliticalStatus", 6);
+            var phoneNumberIndex = ResolveColumnIndex(headers, columns.Count, "PhoneNumber", 7);
+            var emailIndex = ResolveColumnIndex(headers, columns.Count, "Email", 8);
+            var addressIndex = ResolveColumnIndex(headers, columns.Count, "Address", 9);
+            var departmentIndex = ResolveColumnIndex(headers, columns.Count, "Department", 10);
+            var majorIndex = ResolveColumnIndex(headers, columns.Count, "Major", 11);
+            var classIndex = ResolveColumnIndex(headers, columns.Count, "Class", 12);
+            var enrollmentDateIndex = ResolveColumnIndex(headers, columns.Count, "EnrollmentDate", 13);
+            var photoIndex = ResolveColumnIndex(headers, columns.Count, "Photo", 14);
+
+            if (studentNoIndex < 0 || nameIndex < 0 || genderIndex < 0 || birthDateIndex < 0 || idCardIndex < 0 || nationIndex < 0 || politicalStatusIndex < 0 || phoneNumberIndex < 0 || emailIndex < 0 || addressIndex < 0 || departmentIndex < 0 || majorIndex < 0 || classIndex < 0 || enrollmentDateIndex < 0)
+            {
+                return false;
+            }
+
+            student.StudentNo = GetColumn(columns, studentNoIndex);
+            student.Name = GetColumn(columns, nameIndex);
+            student.Gender = GetColumn(columns, genderIndex);
+            student.BirthDate = ParseDate(columns, birthDateIndex);
+            student.IdCard = GetColumn(columns, idCardIndex);
+            student.Nation = GetColumn(columns, nationIndex);
+            student.PoliticalStatus = GetColumn(columns, politicalStatusIndex);
+            student.PhoneNumber = GetColumn(columns, phoneNumberIndex);
+            student.Email = GetColumn(columns, emailIndex);
+            student.Address = GetColumn(columns, addressIndex);
+            student.Department = GetColumn(columns, departmentIndex);
+            student.Major = GetColumn(columns, majorIndex);
+            student.Class = GetColumn(columns, classIndex);
+            student.EnrollmentDate = ParseDate(columns, enrollmentDateIndex);
+            student.Photo = photoIndex >= 0 ? GetColumn(columns, photoIndex) : string.Empty;
+            return !string.IsNullOrWhiteSpace(student.StudentNo);
+        }
+
+        private static int ResolveColumnIndex(IReadOnlyDictionary<string, int> headers, int columnCount, string headerName, int fallbackIndex)
+        {
+            if (headers.TryGetValue(headerName, out var headerIndex))
+            {
+                return headerIndex;
+            }
+
+            return fallbackIndex < columnCount ? fallbackIndex : -1;
         }
 
         private static List<string> SplitCsvLine(string line)
@@ -497,5 +642,7 @@ namespace StudentsManagerSystem.Views.StudentArchive
                 ? value
                 : null;
         }
+
+        private sealed record CsvImportResult(List<Student> Students, int SkippedRows);
     }
 }
