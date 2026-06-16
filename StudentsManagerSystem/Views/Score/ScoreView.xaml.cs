@@ -18,7 +18,23 @@ namespace StudentsManagerSystem.Views.Score
         {
             InitializeComponent();
             LoadBusinessOptions();
+            ApplyPermissions();
             LoadScoreData();
+        }
+
+        private bool IsAdmin() => string.Equals(App.CurrentUserRole, "Admin", StringComparison.OrdinalIgnoreCase);
+
+        private void ApplyPermissions()
+        {
+            if (IsAdmin())
+            {
+                return;
+            }
+
+            btnAdd.Visibility = Visibility.Collapsed;
+            btnEdit.Visibility = Visibility.Collapsed;
+            btnDelete.Visibility = Visibility.Collapsed;
+            btnImport.Visibility = Visibility.Collapsed;
         }
 
         private void LoadBusinessOptions()
@@ -60,6 +76,12 @@ namespace StudentsManagerSystem.Views.Score
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许录入成绩。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             var window = new ScoreEditWindow();
             if (window.ShowDialog() == true && window.Result is not null)
             {
@@ -78,6 +100,12 @@ namespace StudentsManagerSystem.Views.Score
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许修改成绩。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (dataGrid.SelectedItem is Models.Score selectedScore)
             {
                 var window = new ScoreEditWindow(selectedScore);
@@ -103,6 +131,12 @@ namespace StudentsManagerSystem.Views.Score
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许删除成绩。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (dataGrid.SelectedItem is Models.Score selectedScore)
             {
                 var result = MessageBox.Show("确定要删除选中的成绩记录吗？", "确认删除",
@@ -137,6 +171,12 @@ namespace StudentsManagerSystem.Views.Score
 
         private void btnImport_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许导入成绩。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             var dialog = new OpenFileDialog
             {
                 Filter = "CSV 文件 (*.csv)|*.csv",

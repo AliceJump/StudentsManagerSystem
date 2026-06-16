@@ -35,6 +35,13 @@ namespace StudentsManagerSystem.Services
         {
             var validation = ValidateDepartment(department);
             if (!validation.Succeeded) return validation;
+            var existing = repository.GetDepartmentById(department.Id);
+            if (existing != null && !string.Equals(existing.DepartmentName, department.DepartmentName, StringComparison.OrdinalIgnoreCase))
+            {
+                repository.RenameStudentsDepartment(existing.DepartmentName, department.DepartmentName);
+                repository.RenameMajorsDepartment(existing.DepartmentName, department.DepartmentName);
+                repository.RenameClassesDepartment(existing.DepartmentName, department.DepartmentName);
+            }
             repository.UpdateDepartment(department);
             AppLogger.Info($"修改院系：{department.DepartmentNo} {department.DepartmentName}");
             return ServiceResult.Success("院系修改成功");
@@ -53,6 +60,12 @@ namespace StudentsManagerSystem.Services
         {
             var validation = ValidateMajor(major);
             if (!validation.Succeeded) return validation;
+            var existing = repository.GetMajorById(major.Id);
+            if (existing != null && !string.Equals(existing.MajorName, major.MajorName, StringComparison.OrdinalIgnoreCase))
+            {
+                repository.RenameStudentsMajor(existing.MajorName, major.MajorName);
+                repository.RenameClassesMajor(existing.MajorName, major.MajorName);
+            }
             repository.UpdateMajor(major);
             AppLogger.Info($"修改专业：{major.MajorNo} {major.MajorName}");
             return ServiceResult.Success("专业修改成功");
@@ -71,6 +84,13 @@ namespace StudentsManagerSystem.Services
         {
             var validation = ValidateClass(classInfo);
             if (!validation.Succeeded) return validation;
+            var existing = repository.GetClassById(classInfo.Id);
+            if (existing != null && !string.Equals(existing.ClassName, classInfo.ClassName, StringComparison.OrdinalIgnoreCase))
+            {
+                repository.RenameStudentsClass(existing.ClassName, classInfo.ClassName);
+            }
+
+            classInfo.StudentCount = repository.CountStudentsByClassName(classInfo.ClassName);
             repository.UpdateClass(classInfo);
             AppLogger.Info($"修改班级：{classInfo.ClassNo} {classInfo.ClassName}");
             return ServiceResult.Success("班级修改成功");
@@ -78,18 +98,36 @@ namespace StudentsManagerSystem.Services
 
         public void DeleteDepartment(int id)
         {
+            var existing = repository.GetDepartmentById(id);
+            if (existing != null && repository.DepartmentHasReferences(existing.DepartmentName))
+            {
+                throw new InvalidOperationException("该院系已被学生、专业或班级引用，不能直接删除");
+            }
+
             repository.DeleteDepartment(id);
             AppLogger.Info($"删除院系：Id={id}");
         }
 
         public void DeleteMajor(int id)
         {
+            var existing = repository.GetMajorById(id);
+            if (existing != null && repository.MajorHasReferences(existing.MajorName))
+            {
+                throw new InvalidOperationException("该专业已被学生或班级引用，不能直接删除");
+            }
+
             repository.DeleteMajor(id);
             AppLogger.Info($"删除专业：Id={id}");
         }
 
         public void DeleteClass(int id)
         {
+            var existing = repository.GetClassById(id);
+            if (existing != null && repository.ClassHasReferences(existing.ClassName))
+            {
+                throw new InvalidOperationException("该班级已被学生引用，不能直接删除");
+            }
+
             repository.DeleteClass(id);
             AppLogger.Info($"删除班级：Id={id}");
         }

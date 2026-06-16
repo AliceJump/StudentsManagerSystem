@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using StudentsManagerSystem.Common;
 using StudentsManagerSystem.Models;
@@ -14,22 +15,32 @@ namespace StudentsManagerSystem.Data
     {
         public static void Initialize()
         {
+            Initialize(false);
+        }
+
+        public static void Initialize(bool forceSeed)
+        {
             AppLogger.Info("开始初始化 SQLite 数据库。");
 
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var databaseExists = File.Exists(DatabaseConfiguration.ResolveDatabaseFileName());
             context.Database.EnsureCreated();
             EnsureLookupOptionsTable(context);
             EnsureStudentArchiveStudentNoColumns(context);
 
-            SeedLookupOptions(context);
-            SeedDepartments(context);
-            SeedMajors(context);
-            SeedClasses(context);
-            SeedCourses(context);
-            SeedStudents(context);
-            SeedStudentArchives(context);
-            SeedScores(context);
-            SeedUsers(context);
+            if (!databaseExists || forceSeed)
+            {
+                SeedLookupOptions(context);
+                SeedDepartments(context);
+                SeedMajors(context);
+                SeedClasses(context);
+                SeedCourses(context);
+                SeedStudents(context);
+                RecalculateClassStudentCounts(context);
+                SeedStudentArchives(context);
+                SeedScores(context);
+                SeedUsers(context);
+            }
 
             AppLogger.Info("SQLite 数据库初始化完成。");
         }
@@ -205,18 +216,18 @@ CREATE TABLE IF NOT EXISTS LookupOptions (
         {
             var classes = new[]
             {
-                new Class { ClassNo = "CS2024-1", ClassName = "软工2024-1班", DepartmentName = "计算机学院", MajorName = "软件工程", Grade = "2024", ClassTeacher = "张老师", StudentCount = 4, Remarks = "示例班级" },
-                new Class { ClassNo = "CS2024-2", ClassName = "计科2024-1班", DepartmentName = "计算机学院", MajorName = "计算机科学与技术", Grade = "2024", ClassTeacher = "李老师", StudentCount = 4, Remarks = "示例班级" },
-                new Class { ClassNo = "EE2024-1", ClassName = "电信2024-1班", DepartmentName = "电子信息学院", MajorName = "电子信息工程", Grade = "2024", ClassTeacher = "王老师", StudentCount = 4, Remarks = "示例班级" },
-                new Class { ClassNo = "ME2024-1", ClassName = "机械2024-1班", DepartmentName = "机械工程学院", MajorName = "机械设计制造及其自动化", Grade = "2024", ClassTeacher = "赵老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "BA2024-1", ClassName = "管理2024-1班", DepartmentName = "管理学院", MajorName = "工商管理", Grade = "2024", ClassTeacher = "陈老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "AR2024-1", ClassName = "视觉2024-1班", DepartmentName = "艺术学院", MajorName = "视觉传达设计", Grade = "2024", ClassTeacher = "刘老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "LA2024-1", ClassName = "英语2024-1班", DepartmentName = "外国语学院", MajorName = "英语", Grade = "2024", ClassTeacher = "孙老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "MS2024-1", ClassName = "数学2024-1班", DepartmentName = "数学学院", MajorName = "数学与应用数学", Grade = "2024", ClassTeacher = "周老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "PH2024-1", ClassName = "物理2024-1班", DepartmentName = "物理学院", MajorName = "物理学", Grade = "2024", ClassTeacher = "吴老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "CH2024-1", ClassName = "化学2024-1班", DepartmentName = "化学学院", MajorName = "化学", Grade = "2024", ClassTeacher = "郑老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "BI2024-1", ClassName = "生科2024-1班", DepartmentName = "生命科学学院", MajorName = "生物技术", Grade = "2024", ClassTeacher = "冯老师", StudentCount = 3, Remarks = "示例班级" },
-                new Class { ClassNo = "ED2024-1", ClassName = "教育2024-1班", DepartmentName = "教育学院", MajorName = "小学教育", Grade = "2024", ClassTeacher = "何老师", StudentCount = 3, Remarks = "示例班级" }
+                new Class { ClassNo = "CS2024-1", ClassName = "软工2024-1班", DepartmentName = "计算机学院", MajorName = "软件工程", Grade = "2024", ClassTeacher = "张老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "CS2024-2", ClassName = "计科2024-1班", DepartmentName = "计算机学院", MajorName = "计算机科学与技术", Grade = "2024", ClassTeacher = "李老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "EE2024-1", ClassName = "电信2024-1班", DepartmentName = "电子信息学院", MajorName = "电子信息工程", Grade = "2024", ClassTeacher = "王老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "ME2024-1", ClassName = "机械2024-1班", DepartmentName = "机械工程学院", MajorName = "机械设计制造及其自动化", Grade = "2024", ClassTeacher = "赵老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "BA2024-1", ClassName = "管理2024-1班", DepartmentName = "管理学院", MajorName = "工商管理", Grade = "2024", ClassTeacher = "陈老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "AR2024-1", ClassName = "视觉2024-1班", DepartmentName = "艺术学院", MajorName = "视觉传达设计", Grade = "2024", ClassTeacher = "刘老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "LA2024-1", ClassName = "英语2024-1班", DepartmentName = "外国语学院", MajorName = "英语", Grade = "2024", ClassTeacher = "孙老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "MS2024-1", ClassName = "数学2024-1班", DepartmentName = "数学学院", MajorName = "数学与应用数学", Grade = "2024", ClassTeacher = "周老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "PH2024-1", ClassName = "物理2024-1班", DepartmentName = "物理学院", MajorName = "物理学", Grade = "2024", ClassTeacher = "吴老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "CH2024-1", ClassName = "化学2024-1班", DepartmentName = "化学学院", MajorName = "化学", Grade = "2024", ClassTeacher = "郑老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "BI2024-1", ClassName = "生科2024-1班", DepartmentName = "生命科学学院", MajorName = "生物技术", Grade = "2024", ClassTeacher = "冯老师", StudentCount = 0, Remarks = "示例班级" },
+                new Class { ClassNo = "ED2024-1", ClassName = "教育2024-1班", DepartmentName = "教育学院", MajorName = "小学教育", Grade = "2024", ClassTeacher = "何老师", StudentCount = 0, Remarks = "示例班级" }
             };
 
             foreach (var classInfo in classes)
@@ -283,6 +294,17 @@ CREATE TABLE IF NOT EXISTS LookupOptions (
                 {
                     context.Students.Add(student);
                 }
+            }
+
+            context.SaveChanges();
+        }
+
+        private static void RecalculateClassStudentCounts(StudentsManagerDbContext context)
+        {
+            var classes = context.Classes.ToList();
+            foreach (var classInfo in classes)
+            {
+                classInfo.StudentCount = context.Students.Count(item => item.Class == classInfo.ClassName);
             }
 
             context.SaveChanges();

@@ -219,7 +219,10 @@ namespace StudentsManagerSystem.Data.Repositories
                     EF.Functions.Like(item.Status, $"%{keyword}%"));
             }
 
-            return query.OrderBy(item => item.StudentNo).ToList();
+            return query.OrderBy(item => item.StudentNo)
+                .ToList()
+                .Select(NormalizeRegistrationSemester)
+                .ToList();
         }
 
         private static List<StatusChangeRecord> QueryChanges(string? keyword)
@@ -276,6 +279,17 @@ namespace StudentsManagerSystem.Data.Repositories
             }
 
             return query.OrderByDescending(item => item.GraduationDate).ThenBy(item => item.StudentNo).ToList();
+        }
+
+        private static StudentRegistration NormalizeRegistrationSemester(StudentRegistration record)
+        {
+            record.Semester = record.Semester switch
+            {
+                "1" => "第一学期",
+                "2" => "第二学期",
+                _ => record.Semester
+            };
+            return record;
         }
 
         private static bool ExistsById<TEntity>(int id) where TEntity : class

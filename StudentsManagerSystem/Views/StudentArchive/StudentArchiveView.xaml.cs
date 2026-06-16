@@ -23,7 +23,23 @@ namespace StudentsManagerSystem.Views.StudentArchive
         public StudentArchiveView()
         {
             InitializeComponent();
+            ApplyPermissions();
             LoadStudentData();
+        }
+
+        private bool IsAdmin() => string.Equals(App.CurrentUserRole, "Admin", StringComparison.OrdinalIgnoreCase);
+
+        private void ApplyPermissions()
+        {
+            if (IsAdmin())
+            {
+                return;
+            }
+
+            btnAdd.Visibility = Visibility.Collapsed;
+            btnEdit.Visibility = Visibility.Collapsed;
+            btnDelete.Visibility = Visibility.Collapsed;
+            btnImport.Visibility = Visibility.Collapsed;
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -174,6 +190,12 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许新增。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (tabControl.SelectedIndex != 0)
             {
                 EditArchiveRecord(null);
@@ -198,6 +220,12 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许修改。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (tabControl.SelectedIndex != 0)
             {
                 if (dataGrid.SelectedItem == null)
@@ -235,6 +263,12 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许删除。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (tabControl.SelectedIndex != 0)
             {
                 DeleteArchiveRecord();
@@ -436,6 +470,12 @@ namespace StudentsManagerSystem.Views.StudentArchive
 
         private void btnImport_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许导入。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (tabControl.SelectedIndex != 0)
             {
                 MessageBox.Show("当前仅支持学生基本信息导入。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);

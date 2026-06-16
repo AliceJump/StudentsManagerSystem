@@ -133,6 +133,15 @@
                                    Foreground="#2C3E50" 
                                    VerticalAlignment="Center" 
                                    Margin="5,0,0,0"/>
+                        <Button x:Name="btnInitializeDatabase"
+                                Content="初始化数据库"
+                                Margin="20,0,0,0"
+                                Padding="14,6"
+                                Background="#3498DB"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Click="btnInitializeDatabase_Click"/>
                     </StackPanel>
                 </Grid>
             </Border>

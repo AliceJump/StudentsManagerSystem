@@ -9,6 +9,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
     public partial class RegistrationEditWindow : Window
     {
         private readonly StudentStatusService studentStatusService = new StudentStatusService();
+        private readonly BasicDataService basicDataService = new BasicDataService();
         private StudentRegistration model;
 
         public StudentRegistration Result => model;
@@ -16,9 +17,18 @@ namespace StudentsManagerSystem.Views.StudentStatus
         public RegistrationEditWindow(StudentRegistration? existing = null)
         {
             InitializeComponent();
-            cmbSemester.ItemsSource = new[] { "1", "2" };
+            LoadBusinessOptions();
             model = existing != null ? Clone(existing) : new StudentRegistration { RegistrationDate = DateTime.Now };
             BindModelToControls();
+        }
+
+        private void LoadBusinessOptions()
+        {
+            cmbSemester.ItemsSource = basicDataService.GetLookupValues("Semester");
+            if (cmbSemester.Items.Count > 0)
+            {
+                cmbSemester.SelectedIndex = 0;
+            }
         }
 
         public void MakeReadOnly()
@@ -54,7 +64,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
             txtStudentName.Text = model.StudentName;
             dpRegistrationDate.SelectedDate = model.RegistrationDate ?? DateTime.Now;
             txtAcademicYear.Text = AcademicYearHelper.NormalizeStartYear(model.AcademicYear);
-            cmbSemester.SelectedItem = string.IsNullOrEmpty(model.Semester) ? "1" : model.Semester;
+            cmbSemester.SelectedItem = NormalizeSemester(model.Semester);
             txtRemarks.Text = model.Remarks;
         }
 
@@ -91,7 +101,7 @@ namespace StudentsManagerSystem.Views.StudentStatus
             model.StudentName = txtStudentName.Text.Trim();
             model.RegistrationDate = dpRegistrationDate.SelectedDate;
             model.AcademicYear = AcademicYearHelper.NormalizeStartYear(txtAcademicYear.Text.Trim());
-            model.Semester = cmbSemester.SelectedItem?.ToString() ?? string.Empty;
+            model.Semester = NormalizeSemester(cmbSemester.SelectedItem?.ToString() ?? string.Empty);
             model.Remarks = txtRemarks.Text.Trim();
 
             try
@@ -118,6 +128,18 @@ namespace StudentsManagerSystem.Views.StudentStatus
         {
             DialogResult = false;
             Close();
+        }
+
+        private static string NormalizeSemester(string semester)
+        {
+            return semester switch
+            {
+                "1" => "第一学期",
+                "2" => "第二学期",
+                "第一学期" => "第一学期",
+                "第二学期" => "第二学期",
+                _ => semester
+            };
         }
     }
 }

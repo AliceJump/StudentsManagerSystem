@@ -63,11 +63,11 @@
 
         <!-- 操作按钮区 -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15">
-            <Button Content="新增" Style="{StaticResource ButtonStyle}" Click="btnAdd_Click"/>
-            <Button Content="修改" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click"/>
-            <Button Content="删除" Style="{StaticResource DeleteButtonStyle}" Click="btnDelete_Click"/>
-            <Button Content="查看详情" Style="{StaticResource ButtonStyle}" Click="btnView_Click"/>
-            <Button Content="刷新" Style="{StaticResource ButtonStyle}" Click="btnRefresh_Click"/>
+            <Button x:Name="btnAdd" Content="新增" Style="{StaticResource ButtonStyle}" Click="btnAdd_Click"/>
+            <Button x:Name="btnEdit" Content="修改" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click"/>
+            <Button x:Name="btnDelete" Content="删除" Style="{StaticResource DeleteButtonStyle}" Click="btnDelete_Click"/>
+            <Button x:Name="btnView" Content="查看详情" Style="{StaticResource ButtonStyle}" Click="btnView_Click"/>
+            <Button x:Name="btnRefresh" Content="刷新" Style="{StaticResource ButtonStyle}" Click="btnRefresh_Click"/>
 
             <!-- 搜索框 -->
             <StackPanel Orientation="Horizontal" Margin="30,0,0,0">

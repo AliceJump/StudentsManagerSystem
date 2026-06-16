@@ -9,6 +9,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using StudentsManagerSystem.Common;
+using StudentsManagerSystem.Data;
 using StudentsManagerSystem.ViewModels;
 
 namespace StudentsManagerSystem
@@ -38,6 +40,11 @@ namespace StudentsManagerSystem
             {
                 btnBasicData.IsEnabled = false;
                 btnBasicData.ToolTip = "当前用户无基础数据管理权限";
+                btnInitializeDatabase.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                btnInitializeDatabase.Visibility = Visibility.Visible;
             }
         }
 
@@ -88,6 +95,32 @@ namespace StudentsManagerSystem
                         MainFrame.Navigate(new Uri("Views/Logs/LogView.xaml", UriKind.Relative));
                         break;
                 }
+            }
+        }
+
+        private void btnInitializeDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.Equals(App.CurrentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("只有系统管理员可以执行数据库初始化。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show("确定要执行数据库初始化吗？这会补充缺失的种子数据。", "确认初始化", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                DatabaseInitializer.Initialize(true);
+                MessageBox.Show("数据库初始化完成。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error("管理员手动初始化数据库失败。", ex);
+                MessageBox.Show($"初始化失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

@@ -134,6 +134,7 @@ namespace StudentsManagerSystem.Services
             }
 
             repository.Add(student);
+            SyncClassStudentCount(student.Class);
             AppLogger.Info($"新增学生：{student.StudentNo} {student.Name}");
             return ServiceResult.Success("学生信息新增成功");
         }
@@ -151,7 +152,14 @@ namespace StudentsManagerSystem.Services
                 return validation;
             }
 
+            var originalStudent = repository.GetById(student.Id);
             repository.Update(student);
+            if (originalStudent != null && !string.Equals(originalStudent.Class, student.Class, StringComparison.OrdinalIgnoreCase))
+            {
+                SyncClassStudentCount(originalStudent.Class);
+            }
+
+            SyncClassStudentCount(student.Class);
             AppLogger.Info($"修改学生：{student.StudentNo} {student.Name}");
             return ServiceResult.Success("学生信息修改成功");
         }
@@ -170,7 +178,12 @@ namespace StudentsManagerSystem.Services
 
         public void Delete(int id)
         {
+            var existing = repository.GetById(id);
             repository.Delete(id);
+            if (existing != null)
+            {
+                SyncClassStudentCount(existing.Class);
+            }
             AppLogger.Info($"删除学生：Id={id}");
         }
 
@@ -235,6 +248,30 @@ namespace StudentsManagerSystem.Services
             return student == null
                 ? ServiceResult<int>.Failure("学号不存在，请先维护学生基本信息")
                 : ServiceResult<int>.Success(student.Id);
+        }
+
+        private void SyncClassStudentCount(string className)
+        {
+            if (string.IsNullOrWhiteSpace(className))
+            {
+                return;
+            }
+
+            var classInfo = new BasicDataRepository().GetClasses().FirstOrDefault(item => string.Equals(item.ClassName, className, StringComparison.OrdinalIgnoreCase));
+            if (classInfo == null)
+            {
+                return;
+            }
+
+            using var context = StudentsManagerSystem.Data.StudentsManagerDbContextFactory.CreateDbContext();
+            var entity = context.Classes.FirstOrDefault(item => item.Id == classInfo.Id);
+            if (entity == null)
+            {
+                return;
+            }
+
+            entity.StudentCount = context.Students.Count(item => item.Class == entity.ClassName);
+            context.SaveChanges();
         }
     }
 }

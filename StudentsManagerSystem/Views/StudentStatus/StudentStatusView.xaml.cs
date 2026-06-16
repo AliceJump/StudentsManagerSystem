@@ -13,7 +13,22 @@ namespace StudentsManagerSystem.Views.StudentStatus
         public StudentStatusView()
         {
             InitializeComponent();
+            ApplyPermissions();
             LoadCurrentTabData();
+        }
+
+        private bool IsAdmin() => string.Equals(App.CurrentUserRole, "Admin", StringComparison.OrdinalIgnoreCase);
+
+        private void ApplyPermissions()
+        {
+            if (IsAdmin())
+            {
+                return;
+            }
+
+            btnAdd.Visibility = Visibility.Collapsed;
+            btnEdit.Visibility = Visibility.Collapsed;
+            btnDelete.Visibility = Visibility.Collapsed;
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -125,6 +140,12 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许新增。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (tabControl.SelectedIndex == 0)
             {
                 var win = new RegistrationEditWindow { Owner = Window.GetWindow(this) };
@@ -149,6 +170,12 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许修改。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (dataGrid.SelectedItem == null)
             {
                 MessageBox.Show("请先选择要修改的记录！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -187,6 +214,12 @@ namespace StudentsManagerSystem.Views.StudentStatus
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdmin())
+            {
+                MessageBox.Show("当前用户仅支持查看，不允许删除。", "权限提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             if (dataGrid.SelectedItem == null)
             {
                 MessageBox.Show("请先选择要删除的记录！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);

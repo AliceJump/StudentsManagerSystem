@@ -38,6 +38,24 @@ namespace StudentsManagerSystem.Data.Repositories
                 .ToList();
         }
 
+        public Department? GetDepartmentById(int id)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Departments.AsNoTracking().FirstOrDefault(item => item.Id == id);
+        }
+
+        public Major? GetMajorById(int id)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Majors.AsNoTracking().FirstOrDefault(item => item.Id == id);
+        }
+
+        public Class? GetClassById(int id)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Classes.AsNoTracking().FirstOrDefault(item => item.Id == id);
+        }
+
         public int AddDepartment(Department department)
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
@@ -88,6 +106,105 @@ namespace StudentsManagerSystem.Data.Repositories
         }
 
         public void DeleteClass(int id) => DeleteEntity<Class>(id);
+
+        public void RenameStudentsDepartment(string oldName, string newName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var students = context.Students.Where(item => item.Department == oldName).ToList();
+            foreach (var student in students)
+            {
+                student.Department = newName;
+            }
+
+            context.SaveChanges();
+        }
+
+        public void RenameStudentsMajor(string oldName, string newName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var students = context.Students.Where(item => item.Major == oldName).ToList();
+            foreach (var student in students)
+            {
+                student.Major = newName;
+            }
+
+            context.SaveChanges();
+        }
+
+        public void RenameStudentsClass(string oldName, string newName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var students = context.Students.Where(item => item.Class == oldName).ToList();
+            foreach (var student in students)
+            {
+                student.Class = newName;
+            }
+
+            context.SaveChanges();
+        }
+
+        public void RenameMajorsDepartment(string oldName, string newName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var majors = context.Majors.Where(item => item.DepartmentName == oldName).ToList();
+            foreach (var major in majors)
+            {
+                major.DepartmentName = newName;
+            }
+
+            context.SaveChanges();
+        }
+
+        public void RenameClassesDepartment(string oldName, string newName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var classes = context.Classes.Where(item => item.DepartmentName == oldName).ToList();
+            foreach (var classInfo in classes)
+            {
+                classInfo.DepartmentName = newName;
+            }
+
+            context.SaveChanges();
+        }
+
+        public void RenameClassesMajor(string oldName, string newName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var classes = context.Classes.Where(item => item.MajorName == oldName).ToList();
+            foreach (var classInfo in classes)
+            {
+                classInfo.MajorName = newName;
+            }
+
+            context.SaveChanges();
+        }
+
+        public int CountStudentsByClassName(string className)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Count(item => item.Class == className);
+        }
+
+        public bool DepartmentHasReferences(string departmentName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Any(item => item.Department == departmentName) ||
+                   context.Majors.Any(item => item.DepartmentName == departmentName) ||
+                   context.Classes.Any(item => item.DepartmentName == departmentName);
+        }
+
+        public bool MajorHasReferences(string majorName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Any(item => item.Major == majorName) ||
+                   context.Classes.Any(item => item.MajorName == majorName);
+        }
+
+        public bool ClassHasReferences(string className)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Any(item => item.Class == className);
+        }
 
         private static void DeleteEntity<TEntity>(int id) where TEntity : class
         {

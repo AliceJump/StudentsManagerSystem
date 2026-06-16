@@ -63,19 +63,19 @@
                 <TextBlock Text="学期：" VerticalAlignment="Center" FontSize="14" Margin="20,0,10,0"/>
                 <ComboBox x:Name="cmbSemester" Width="120" Height="32" FontSize="14"/>
                 
-                <Button Content="查询" Style="{StaticResource ButtonStyle}" Margin="20,5,5,5" Click="btnQuery_Click"/>
+                <Button x:Name="btnQuery" Content="查询" Style="{StaticResource ButtonStyle}" Margin="20,5,5,5" Click="btnQuery_Click"/>
             </StackPanel>
         </Border>
 
         <!-- 操作按钮区 -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
-            <Button Content="录入成绩" Style="{StaticResource ButtonStyle}" Click="btnAdd_Click"/>
-            <Button Content="修改成绩" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click"/>
-            <Button Content="删除" Style="{StaticResource DeleteButtonStyle}" Click="btnDelete_Click"/>
-            <Button Content="查看详情" Style="{StaticResource ButtonStyle}" Click="btnView_Click"/>
-            <Button Content="导入成绩" Style="{StaticResource ButtonStyle}" Click="btnImport_Click"/>
-            <Button Content="导出成绩" Style="{StaticResource ButtonStyle}" Click="btnExport_Click"/>
-            <Button Content="刷新" Style="{StaticResource ButtonStyle}" Click="btnRefresh_Click"/>
+            <Button x:Name="btnAdd" Content="录入成绩" Style="{StaticResource ButtonStyle}" Click="btnAdd_Click"/>
+            <Button x:Name="btnEdit" Content="修改成绩" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click"/>
+            <Button x:Name="btnDelete" Content="删除" Style="{StaticResource DeleteButtonStyle}" Click="btnDelete_Click"/>
+            <Button x:Name="btnView" Content="查看详情" Style="{StaticResource ButtonStyle}" Click="btnView_Click"/>
+            <Button x:Name="btnImport" Content="导入成绩" Style="{StaticResource ButtonStyle}" Click="btnImport_Click"/>
+            <Button x:Name="btnExport" Content="导出成绩" Style="{StaticResource ButtonStyle}" Click="btnExport_Click"/>
+            <Button x:Name="btnRefresh" Content="刷新" Style="{StaticResource ButtonStyle}" Click="btnRefresh_Click"/>
         </StackPanel>
 
         <!-- 数据列表 -->
