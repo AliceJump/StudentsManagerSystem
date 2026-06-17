@@ -32,8 +32,20 @@ namespace StudentsManagerSystem.Views.Query
         {
             cmbDepartment.ItemsSource = new[] { "全部" }.Concat(basicDataService.GetDepartmentNames()).ToList();
             cmbDepartment.SelectedIndex = 0;
-            cmbClass.ItemsSource = new[] { "全部" }.Concat(basicDataService.GetClassNames()).ToList();
-            cmbClass.SelectedIndex = 0;
+            LoadClassOptions();
+        }
+
+        private void LoadClassOptions()
+        {
+            var selectedClass = GetComboText(cmbClass);
+            var selectedDepartment = GetComboText(cmbDepartment);
+            var classNames = cmbDepartment.SelectedIndex > 0 && !string.IsNullOrWhiteSpace(selectedDepartment)
+                ? basicDataService.GetClassNames(selectedDepartment)
+                : basicDataService.GetClassNames();
+            var classOptions = new[] { "全部" }.Concat(classNames).ToList();
+
+            cmbClass.ItemsSource = classOptions;
+            cmbClass.SelectedItem = classOptions.Contains(selectedClass) ? selectedClass : "全部";
         }
 
         private void ApplyStudentFilter()
@@ -58,6 +70,11 @@ namespace StudentsManagerSystem.Views.Query
                 dataGrid.ItemsSource = null;
                 UpdateStatistics(Array.Empty<Student>());
             }
+        }
+
+        private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LoadClassOptions();
         }
 
         private void btnQuery_Click(object sender, RoutedEventArgs e)

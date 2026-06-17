@@ -86,7 +86,8 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="院系：" 
                            VerticalAlignment="Center" FontSize="14" Margin="0,5"/>
                 <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbDepartment" 
-                          Height="32" FontSize="14" Margin="0,5"/>
+                          Height="32" FontSize="14" Margin="0,5"
+                          SelectionChanged="cmbDepartment_SelectionChanged"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="班级：" 
                            VerticalAlignment="Center" FontSize="14" Margin="10,5,0,5"/>
