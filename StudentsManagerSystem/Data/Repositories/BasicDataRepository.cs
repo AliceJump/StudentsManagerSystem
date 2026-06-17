@@ -27,6 +27,15 @@ namespace StudentsManagerSystem.Data.Repositories
             return context.Classes.AsNoTracking().OrderBy(item => item.ClassNo).ToList();
         }
 
+        public List<Class> GetClassesByDepartment(string departmentName)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Classes.AsNoTracking()
+                .Where(item => item.DepartmentName == departmentName)
+                .OrderBy(item => item.ClassNo)
+                .ToList();
+        }
+
         public List<string> GetLookupValues(string category)
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();

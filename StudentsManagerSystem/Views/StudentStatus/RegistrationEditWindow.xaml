@@ -38,7 +38,7 @@
                 <TextBox x:Name="txtStudentNo" Grid.Row="0" Grid.Column="1" Margin="4" />
 
                 <Label Grid.Row="1" Grid.Column="0" Content="姓名:" VerticalAlignment="Center" />
-                <TextBox x:Name="txtStudentName" Grid.Row="1" Grid.Column="1" Margin="4" />
+                <TextBox x:Name="txtStudentName" Grid.Row="1" Grid.Column="1" Margin="4" IsReadOnly="True" Background="#F0F0F0" />
 
                 <Label Grid.Row="2" Grid.Column="0" Content="注册日期:" VerticalAlignment="Center" />
                 <DatePicker x:Name="dpRegistrationDate" Grid.Row="2" Grid.Column="1" Margin="4" />

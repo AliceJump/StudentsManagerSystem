@@ -25,6 +25,8 @@ namespace StudentsManagerSystem.Services
 
         public List<string> GetSemesters() => repository.GetSemesters();
 
+        public List<string> GetSemesters(string academicYear) => repository.GetSemesters(academicYear);
+
         public ServiceResult Add(Score score)
         {
             score.StudentName = ResolveStudentName(score.StudentNo);

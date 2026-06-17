@@ -62,6 +62,13 @@ namespace StudentsManagerSystem.Views.StudentArchive
             SelectFirstIfAny(cmbClass);
         }
 
+        private void cmbDepartment_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var dept = GetComboItemText(cmbDepartment.SelectedItem);
+            cmbClass.ItemsSource = basicDataService.GetClassNames(dept);
+            cmbClass.SelectedIndex = cmbClass.Items.Count > 0 ? 0 : -1;
+        }
+
         private static void SelectFirstIfAny(System.Windows.Controls.ComboBox comboBox)
         {
             if (comboBox.Items.Count > 0)

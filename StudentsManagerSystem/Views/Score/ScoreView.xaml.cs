@@ -41,17 +41,19 @@ namespace StudentsManagerSystem.Views.Score
         {
             var years = scoreService.GetAcademicYears();
             cmbAcademicYear.ItemsSource = years;
+            cmbAcademicYear.SelectionChanged += CmbAcademicYear_SelectionChanged;
             if (years.Count > 0)
             {
                 cmbAcademicYear.SelectedIndex = 0;
             }
+        }
 
-            var semesters = scoreService.GetSemesters();
+        private void CmbAcademicYear_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var year = GetComboText(cmbAcademicYear);
+            var semesters = scoreService.GetSemesters(year);
             cmbSemester.ItemsSource = semesters;
-            if (semesters.Count > 0)
-            {
-                cmbSemester.SelectedIndex = 0;
-            }
+            cmbSemester.SelectedIndex = semesters.Count > 0 ? 0 : -1;
         }
 
         private void LoadScoreData()

@@ -20,6 +20,8 @@ namespace StudentsManagerSystem.Services
 
         public List<string> GetClassNames() => GetClasses().Select(item => item.ClassName).ToList();
 
+        public List<string> GetClassNames(string departmentName) => repository.GetClassesByDepartment(departmentName).Select(item => item.ClassName).ToList();
+
         public List<string> GetLookupValues(string category) => repository.GetLookupValues(category);
 
         public ServiceResult AddDepartment(Department department)

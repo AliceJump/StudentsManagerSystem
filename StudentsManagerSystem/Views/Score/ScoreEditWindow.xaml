@@ -83,7 +83,7 @@
                         <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStudentNo" Style="{StaticResource TextBoxStyle}"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="姓名：*" Style="{StaticResource LabelStyle}"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStudentName" Style="{StaticResource TextBoxStyle}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtStudentName" Style="{StaticResource TextBoxStyle}" IsReadOnly="True"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="起始学年：*" Style="{StaticResource LabelStyle}"/>
                         <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbAcademicYear" Style="{StaticResource ComboBoxStyle}"/>

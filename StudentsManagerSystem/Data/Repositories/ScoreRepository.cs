@@ -90,6 +90,17 @@ namespace StudentsManagerSystem.Data.Repositories
                 .ToList();
         }
 
+        public List<string> GetSemesters(string academicYear)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Scores.AsNoTracking()
+                .Where(score => score.AcademicYear == academicYear)
+                .Select(score => score.Semester)
+                .Distinct()
+                .OrderBy(semester => semester)
+                .ToList();
+        }
+
         public int Add(Score score)
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();

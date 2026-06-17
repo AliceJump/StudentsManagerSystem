@@ -421,6 +421,14 @@ CREATE TABLE IF NOT EXISTS LookupOptions (
                     DisplayName = "系统管理员",
                     Role = "Admin",
                     IsActive = true
+                },
+                new User
+                {
+                    Username = "teacher",
+                    PasswordHash = ComputeSha256("Teacher@123"),
+                    DisplayName = "普通教师",
+                    Role = "User",
+                    IsActive = true
                 }
             };
 

@@ -12,7 +12,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions><ColumnDefinition Width="120"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
             <Label Grid.Row="0" Content="学号:"/><TextBox x:Name="txtStudentNo" Grid.Row="0" Grid.Column="1" Margin="4"/>
-            <Label Grid.Row="1" Content="姓名:"/><TextBox x:Name="txtStudentName" Grid.Row="1" Grid.Column="1" Margin="4"/>
+            <Label Grid.Row="1" Content="姓名:"/><TextBox x:Name="txtStudentName" Grid.Row="1" Grid.Column="1" Margin="4" IsReadOnly="True" Background="#F0F0F0"/>
             <Label Grid.Row="2" Content="变动日期:"/><DatePicker x:Name="dpChangeDate" Grid.Row="2" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="3" Content="变动类型:"/><TextBox x:Name="txtChangeType" Grid.Row="3" Grid.Column="1" Margin="4"/>
             <Label Grid.Row="4" Content="原信息:"/><TextBox x:Name="txtOriginalInfo" Grid.Row="4" Grid.Column="1" Margin="4"/>

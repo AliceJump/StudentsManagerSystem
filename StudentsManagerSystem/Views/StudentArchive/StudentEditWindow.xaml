@@ -117,7 +117,7 @@
                         <DatePicker Grid.Row="4" Grid.Column="3" x:Name="dpEnrollment" Style="{StaticResource DatePickerStyle}"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="院系：*" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbDepartment" Style="{StaticResource ComboBoxStyle}"/>
+                        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbDepartment" Style="{StaticResource ComboBoxStyle}" SelectionChanged="cmbDepartment_SelectionChanged"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="2" Text="专业：*" Style="{StaticResource LabelStyle}"/>
                         <ComboBox Grid.Row="5" Grid.Column="3" x:Name="cmbMajor" Style="{StaticResource ComboBoxStyle}"/>
