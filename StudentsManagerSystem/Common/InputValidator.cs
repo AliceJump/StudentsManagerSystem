@@ -33,11 +33,11 @@ namespace StudentsManagerSystem.Common
             return Regex.IsMatch(email, @"^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
         }
 
-        // 姓名：汉字或字母，2-50位
+        // 姓名：Unicode 字母（含汉字及各国文字），可含空格、撇号、连字符、点、间隔号，2-50位
         public static bool ValidateName(string name)
         {
             return !string.IsNullOrWhiteSpace(name) && 
-                   Regex.IsMatch(name, @"^[\u4e00-\u9fa5a-zA-Z]{2,50}$");
+                   Regex.IsMatch(name, @"^(?=.{2,50}$)[\p{L}]+(?:[ '\-.·][\p{L}]+)*$");
         }
 
         public static bool ValidateAcademicYear(string academicYear)

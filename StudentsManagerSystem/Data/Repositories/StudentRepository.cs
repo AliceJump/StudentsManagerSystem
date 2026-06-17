@@ -204,6 +204,12 @@ namespace StudentsManagerSystem.Data.Repositories
         public void Update(Student student)
         {
             using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var original = context.Students.AsNoTracking().FirstOrDefault(s => s.Id == student.Id);
+            if (original != null && original.Name != student.Name)
+            {
+                SyncStudentName(context, student.StudentNo, student.Name);
+            }
+
             context.Students.Update(student);
             context.SaveChanges();
         }
@@ -211,8 +217,32 @@ namespace StudentsManagerSystem.Data.Repositories
         public async Task UpdateAsync(Student student, CancellationToken cancellationToken = default)
         {
             await using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            var original = await context.Students.AsNoTracking().FirstOrDefaultAsync(s => s.Id == student.Id, cancellationToken).ConfigureAwait(false);
+            if (original != null && original.Name != student.Name)
+            {
+                await SyncStudentNameAsync(context, student.StudentNo, student.Name, cancellationToken).ConfigureAwait(false);
+            }
+
             context.Students.Update(student);
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        private static void SyncStudentName(StudentsManagerDbContext context, string studentNo, string newName)
+        {
+            context.Scores.Where(s => s.StudentNo == studentNo).ExecuteUpdate(setters => setters.SetProperty(s => s.StudentName, newName));
+            context.StudentRegistrations.Where(s => s.StudentNo == studentNo).ExecuteUpdate(setters => setters.SetProperty(s => s.StudentName, newName));
+            context.StatusChangeRecords.Where(s => s.StudentNo == studentNo).ExecuteUpdate(setters => setters.SetProperty(s => s.StudentName, newName));
+            context.ScholarshipInfos.Where(s => s.StudentNo == studentNo).ExecuteUpdate(setters => setters.SetProperty(s => s.StudentName, newName));
+            context.GraduationInfos.Where(s => s.StudentNo == studentNo).ExecuteUpdate(setters => setters.SetProperty(s => s.StudentName, newName));
+        }
+
+        private static async Task SyncStudentNameAsync(StudentsManagerDbContext context, string studentNo, string newName, CancellationToken cancellationToken = default)
+        {
+            await context.Scores.Where(s => s.StudentNo == studentNo).ExecuteUpdateAsync(setters => setters.SetProperty(s => s.StudentName, newName), cancellationToken).ConfigureAwait(false);
+            await context.StudentRegistrations.Where(s => s.StudentNo == studentNo).ExecuteUpdateAsync(setters => setters.SetProperty(s => s.StudentName, newName), cancellationToken).ConfigureAwait(false);
+            await context.StatusChangeRecords.Where(s => s.StudentNo == studentNo).ExecuteUpdateAsync(setters => setters.SetProperty(s => s.StudentName, newName), cancellationToken).ConfigureAwait(false);
+            await context.ScholarshipInfos.Where(s => s.StudentNo == studentNo).ExecuteUpdateAsync(setters => setters.SetProperty(s => s.StudentName, newName), cancellationToken).ConfigureAwait(false);
+            await context.GraduationInfos.Where(s => s.StudentNo == studentNo).ExecuteUpdateAsync(setters => setters.SetProperty(s => s.StudentName, newName), cancellationToken).ConfigureAwait(false);
         }
 
         public void Delete(int id)

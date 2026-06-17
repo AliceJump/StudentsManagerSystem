@@ -1,4 +1,5 @@
 using StudentsManagerSystem.Common;
+using StudentsManagerSystem.Data;
 using StudentsManagerSystem.Data.Repositories;
 using StudentsManagerSystem.Models;
 
@@ -7,6 +8,12 @@ namespace StudentsManagerSystem.Services
     internal sealed class StudentStatusService
     {
         private readonly StudentStatusRepository repository = new();
+
+        private static string ResolveStudentName(string studentNo)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Where(s => s.StudentNo == studentNo).Select(s => s.Name).FirstOrDefault() ?? string.Empty;
+        }
 
         public List<StudentRegistration> GetRegistrations(string? keyword = null)
         {
@@ -30,6 +37,12 @@ namespace StudentsManagerSystem.Services
 
         public ServiceResult<int> SaveRegistration(StudentRegistration record)
         {
+            record.StudentName = ResolveStudentName(record.StudentNo);
+            if (string.IsNullOrEmpty(record.StudentName))
+            {
+                return ServiceResult<int>.Failure("学号不存在，请先维护学生基本信息");
+            }
+
             if (record.Id != 0 && !repository.RegistrationExists(record.Id))
             {
                 return ServiceResult<int>.Failure("当前记录已不存在，请刷新后重试");
@@ -56,6 +69,12 @@ namespace StudentsManagerSystem.Services
 
         public ServiceResult<int> SaveChange(StatusChangeRecord record)
         {
+            record.StudentName = ResolveStudentName(record.StudentNo);
+            if (string.IsNullOrEmpty(record.StudentName))
+            {
+                return ServiceResult<int>.Failure("学号不存在，请先维护学生基本信息");
+            }
+
             if (record.Id != 0 && !repository.ChangeExists(record.Id))
             {
                 return ServiceResult<int>.Failure("当前记录已不存在，请刷新后重试");
@@ -82,6 +101,12 @@ namespace StudentsManagerSystem.Services
 
         public ServiceResult<int> SaveScholarship(ScholarshipInfo record)
         {
+            record.StudentName = ResolveStudentName(record.StudentNo);
+            if (string.IsNullOrEmpty(record.StudentName))
+            {
+                return ServiceResult<int>.Failure("学号不存在，请先维护学生基本信息");
+            }
+
             if (record.Id != 0 && !repository.ScholarshipExists(record.Id))
             {
                 return ServiceResult<int>.Failure("当前记录已不存在，请刷新后重试");
@@ -108,6 +133,12 @@ namespace StudentsManagerSystem.Services
 
         public ServiceResult<int> SaveGraduation(GraduationInfo record)
         {
+            record.StudentName = ResolveStudentName(record.StudentNo);
+            if (string.IsNullOrEmpty(record.StudentName))
+            {
+                return ServiceResult<int>.Failure("学号不存在，请先维护学生基本信息");
+            }
+
             if (record.Id != 0 && !repository.GraduationExists(record.Id))
             {
                 return ServiceResult<int>.Failure("当前记录已不存在，请刷新后重试");

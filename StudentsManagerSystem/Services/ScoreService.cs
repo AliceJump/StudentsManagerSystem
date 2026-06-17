@@ -1,4 +1,5 @@
 using StudentsManagerSystem.Common;
+using StudentsManagerSystem.Data;
 using StudentsManagerSystem.Data.Repositories;
 using StudentsManagerSystem.Models;
 
@@ -7,6 +8,12 @@ namespace StudentsManagerSystem.Services
     internal sealed class ScoreService
     {
         private readonly ScoreRepository repository = new();
+
+        private static string ResolveStudentName(string studentNo)
+        {
+            using var context = StudentsManagerDbContextFactory.CreateDbContext();
+            return context.Students.Where(s => s.StudentNo == studentNo).Select(s => s.Name).FirstOrDefault() ?? string.Empty;
+        }
 
         public List<Score> GetAll() => repository.GetAll();
 
@@ -20,6 +27,12 @@ namespace StudentsManagerSystem.Services
 
         public ServiceResult Add(Score score)
         {
+            score.StudentName = ResolveStudentName(score.StudentNo);
+            if (string.IsNullOrEmpty(score.StudentName))
+            {
+                return ServiceResult.Failure("学号不存在，请先维护学生基本信息");
+            }
+
             var validation = Validate(score);
             if (!validation.Succeeded)
             {
@@ -36,6 +49,12 @@ namespace StudentsManagerSystem.Services
             if (score.Id <= 0)
             {
                 return ServiceResult.Failure("请选择要修改的成绩记录");
+            }
+
+            score.StudentName = ResolveStudentName(score.StudentNo);
+            if (string.IsNullOrEmpty(score.StudentName))
+            {
+                return ServiceResult.Failure("学号不存在，请先维护学生基本信息");
             }
 
             var validation = Validate(score);
