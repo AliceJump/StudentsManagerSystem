@@ -23,7 +23,7 @@
 
 系统采用"主界面 + 子窗口"的结构设计：
 
-数据库表结构、业务键和关联规则见：`docs/DatabaseDesign.md`。
+数据库表结构、业务键和关联规则见：[`docs/DatabaseDesign.md`](docs/DatabaseDesign.md)。
 
 ```
 StudentsManagerSystem/
@@ -59,7 +59,7 @@ StudentsManagerSystem/
 
 ## 主要功能模块
 
-完整模块职责、用户流程、数据流和功能边界见：`docs/FunctionalModules.md`。
+完整模块职责、用户流程、数据流和功能边界见：[`docs/FunctionalModules.md`](docs/FunctionalModules.md)。
 
 ### 1. 主界面
 - 左侧导航菜单，包含所有功能模块入口
@@ -282,7 +282,7 @@ dotnet run --project StudentsManagerSystem
 
 数据库初始化规范：
 1. 项目只能存在一个统一数据库初始化入口：`DatabaseInitializer.Initialize()`
-2. 默认数据、演示数据、初始化数据只能维护在 `StudentsManagerSystem/Data/DatabaseInitializer.cs`
+2. 默认数据、演示数据、初始化数据只能维护在 [`StudentsManagerSystem/Data/DatabaseInitializer.cs`](StudentsManagerSystem/Data/DatabaseInitializer.cs#L14)
 3. Repository、Service、View、ViewModel、测试代码不得插入硬编码种子数据
 4. 如需新增默认课程、学生、用户等数据，应修改 `DatabaseInitializer`，不能在业务代码中临时补充
 

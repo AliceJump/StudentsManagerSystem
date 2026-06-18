@@ -1,6 +1,6 @@
 # 学生管理 - 增删改查
 
-当前学生档案管理采用 `StudentArchiveView` + `StudentService` + `StudentRepository` 的调用链路。数据库为 SQLite，数据访问通过 EF Core 完成；当前仓储位于 `Data/Repositories`，通过 `StudentsManagerDbContextFactory` 创建 EF Core 上下文。
+当前学生档案管理采用 [`StudentArchiveView`](StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml.cs#L13) + [`StudentService`](StudentsManagerSystem/Services/StudentService.cs#L8) + [`StudentRepository`](StudentsManagerSystem/Data/Repositories/StudentRepository.cs#L10) 的调用链路。数据库为 SQLite，数据访问通过 EF Core 完成；当前仓储位于 [`Data/Repositories`](StudentsManagerSystem/Data/Repositories/)，通过 [`StudentsManagerDbContextFactory`](StudentsManagerSystem/Data/StudentsManagerDbContextFactory.cs#L10) 创建 EF Core 上下文。
 
 ## 查询（Read）
 ```csharp
