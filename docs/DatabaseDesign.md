@@ -2,7 +2,7 @@
 
 ## 1. 数据库定位
 
-系统当前使用 SQLite + EF Core。数据库初始化入口统一为 `DatabaseInitializer.Initialize()`，表结构由 `StudentsManagerDbContext` 映射，默认数据和演示数据集中维护在 `StudentsManagerSystem/Data/DatabaseInitializer.cs`。
+系统当前使用 SQLite + EF Core。数据库初始化入口统一为 [`DatabaseInitializer.Initialize()`](../StudentsManagerSystem/Data/DatabaseInitializer.cs#L16)，表结构由 [`StudentsManagerDbContext`](../StudentsManagerSystem/Data/StudentsManagerDbContext.cs#L9) 映射，默认数据和演示数据集中维护在 [`StudentsManagerSystem/Data/DatabaseInitializer.cs`](../StudentsManagerSystem/Data/DatabaseInitializer.cs#L14)。
 
 ## 2. 主键与业务键原则
 

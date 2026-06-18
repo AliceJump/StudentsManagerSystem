@@ -12,28 +12,28 @@
 
 ### 3.1 界面架构
 
-- 主窗口：`StudentsManagerSystem/MainWindow.xaml`、`StudentsManagerSystem/MainWindow.xaml.cs`
-- 功能页：`StudentsManagerSystem/Views/*`
+- 主窗口：[`StudentsManagerSystem/MainWindow.xaml`](../StudentsManagerSystem/MainWindow.xaml)、[`StudentsManagerSystem/MainWindow.xaml.cs`](../StudentsManagerSystem/MainWindow.xaml.cs#L19)
+- 功能页：[`StudentsManagerSystem/Views/*`](../StudentsManagerSystem/Views/)
 - 子窗口：新增、修改、查看详情等表单窗口
 - 导航方式：主窗口左侧菜单切换，右侧 `Frame` 动态加载功能页
 
 ### 3.2 数据架构
 
-- EF Core 上下文：`StudentsManagerSystem/Data/StudentsManagerDbContext.cs`
-- 数据库配置：`StudentsManagerSystem/Data/DatabaseConfiguration.cs`
-- 数据库初始化与种子数据：`StudentsManagerSystem/Data/DatabaseInitializer.cs`
-- Repository：`StudentsManagerSystem/Data/Repositories/*Repository.cs`
+- EF Core 上下文：[`StudentsManagerSystem/Data/StudentsManagerDbContext.cs`](../StudentsManagerSystem/Data/StudentsManagerDbContext.cs#L9)
+- 数据库配置：[`StudentsManagerSystem/Data/DatabaseConfiguration.cs`](../StudentsManagerSystem/Data/DatabaseConfiguration.cs#L11)
+- 数据库初始化与种子数据：[`StudentsManagerSystem/Data/DatabaseInitializer.cs`](../StudentsManagerSystem/Data/DatabaseInitializer.cs#L14)
+- Repository：[`StudentsManagerSystem/Data/Repositories/*Repository.cs`](../StudentsManagerSystem/Data/Repositories/)
 - 说明：Repository 实际通过 EF Core 访问 SQLite。
 
 ### 3.3 业务架构
 
-- 学生业务：`StudentsManagerSystem/Services/StudentService.cs`
-- 成绩业务：`StudentsManagerSystem/Services/ScoreService.cs`
-- 基础数据业务：`StudentsManagerSystem/Services/BasicDataService.cs`
-- 统一结果：`StudentsManagerSystem/Services/ServiceResult.cs`
-- 通用校验：`StudentsManagerSystem/Common/InputValidator.cs`
-- 日志：`StudentsManagerSystem/Common/AppLogger.cs`
-- CSV：`StudentsManagerSystem/Common/CsvExportHelper.cs`
+- 学生业务：[`StudentsManagerSystem/Services/StudentService.cs`](../StudentsManagerSystem/Services/StudentService.cs#L8)
+- 成绩业务：[`StudentsManagerSystem/Services/ScoreService.cs`](../StudentsManagerSystem/Services/ScoreService.cs#L10)
+- 基础数据业务：[`StudentsManagerSystem/Services/BasicDataService.cs`](../StudentsManagerSystem/Services/BasicDataService.cs#L8)
+- 统一结果：[`StudentsManagerSystem/Services/ServiceResult.cs`](../StudentsManagerSystem/Services/ServiceResult.cs#L4)
+- 通用校验：[`StudentsManagerSystem/Common/InputValidator.cs`](../StudentsManagerSystem/Common/InputValidator.cs#L7)
+- 日志：[`StudentsManagerSystem/Common/AppLogger.cs`](../StudentsManagerSystem/Common/AppLogger.cs#L9)
+- CSV：[`StudentsManagerSystem/Common/CsvExportHelper.cs`](../StudentsManagerSystem/Common/CsvExportHelper.cs#L11)
 
 ## 4. 主界面模块
 
@@ -59,9 +59,9 @@
 
 ### 4.4 实现文件
 
-- `StudentsManagerSystem/MainWindow.xaml`
-- `StudentsManagerSystem/MainWindow.xaml.cs`
-- `StudentsManagerSystem/ViewModels/MainViewModel.cs`
+- [`StudentsManagerSystem/MainWindow.xaml`](../StudentsManagerSystem/MainWindow.xaml)
+- [`StudentsManagerSystem/MainWindow.xaml.cs`](../StudentsManagerSystem/MainWindow.xaml.cs#L19)
+- [`StudentsManagerSystem/ViewModels/MainViewModel.cs`](../StudentsManagerSystem/ViewModels/MainViewModel.cs#L11)
 
 ### 4.5 功能边界
 
@@ -99,11 +99,11 @@
 
 ### 5.5 实现文件
 
-- `StudentsManagerSystem/Views/Login/LoginWindow.xaml`
-- `StudentsManagerSystem/Views/Login/LoginWindow.xaml.cs`
-- `StudentsManagerSystem/Data/Repositories/UsersRepository.cs`
-- `StudentsManagerSystem/Models/User.cs`
-- `StudentsManagerSystem/App.xaml.cs`
+- [`StudentsManagerSystem/Views/Login/LoginWindow.xaml`](../StudentsManagerSystem/Views/Login/LoginWindow.xaml)
+- [`StudentsManagerSystem/Views/Login/LoginWindow.xaml.cs`](../StudentsManagerSystem/Views/Login/LoginWindow.xaml.cs#L9)
+- [`StudentsManagerSystem/Data/Repositories/UsersRepository.cs`](../StudentsManagerSystem/Data/Repositories/UsersRepository.cs#L10)
+- [`StudentsManagerSystem/Models/User.cs`](../StudentsManagerSystem/Models/User.cs)
+- [`StudentsManagerSystem/App.xaml.cs`](../StudentsManagerSystem/App.xaml.cs#L13)
 
 ### 5.6 功能边界
 
@@ -194,17 +194,17 @@
 
 ### 6.5 实现文件
 
-- `StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml`
-- `StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml.cs`
-- `StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml`
-- `StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml.cs`
-- `StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml`
-- `StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml.cs`
-- `StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml`
-- `StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml.cs`
-- `StudentsManagerSystem/Models/Student.cs`
-- `StudentsManagerSystem/Services/StudentService.cs`
-- `StudentsManagerSystem/Data/Repositories/StudentRepository.cs`
+- [`StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml`](../StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml)
+- [`StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml.cs`](../StudentsManagerSystem/Views/StudentArchive/StudentArchiveView.xaml.cs#L13)
+- [`StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml`](../StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml)
+- [`StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml.cs`](../StudentsManagerSystem/Views/StudentArchive/ArchiveRecordEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml`](../StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml)
+- [`StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml.cs`](../StudentsManagerSystem/Views/StudentArchive/StudentEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml`](../StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml)
+- [`StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml.cs`](../StudentsManagerSystem/Views/StudentArchive/StudentDetailWindow.xaml.cs)
+- [`StudentsManagerSystem/Models/Student.cs`](../StudentsManagerSystem/Models/Student.cs)
+- [`StudentsManagerSystem/Services/StudentService.cs`](../StudentsManagerSystem/Services/StudentService.cs#L8)
+- [`StudentsManagerSystem/Data/Repositories/StudentRepository.cs`](../StudentsManagerSystem/Data/Repositories/StudentRepository.cs#L10)
 
 ## 7. 学生学籍管理模块
 
@@ -259,18 +259,18 @@
 
 ### 7.7 实现文件
 
-- `StudentsManagerSystem/Views/StudentStatus/StudentStatusView.xaml`
-- `StudentsManagerSystem/Views/StudentStatus/StudentStatusView.xaml.cs`
-- `StudentsManagerSystem/Views/StudentStatus/RegistrationEditWindow.xaml`
-- `StudentsManagerSystem/Views/StudentStatus/RegistrationEditWindow.xaml.cs`
-- `StudentsManagerSystem/Views/StudentStatus/StatusChangeEditWindow.xaml`
-- `StudentsManagerSystem/Views/StudentStatus/StatusChangeEditWindow.xaml.cs`
-- `StudentsManagerSystem/Views/StudentStatus/ScholarshipEditWindow.xaml`
-- `StudentsManagerSystem/Views/StudentStatus/ScholarshipEditWindow.xaml.cs`
-- `StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml`
-- `StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml.cs`
-- `StudentsManagerSystem/Models/StudentStatus.cs`
-- `StudentsManagerSystem/Data/Repositories/StudentStatusRepository.cs`
+- [`StudentsManagerSystem/Views/StudentStatus/StudentStatusView.xaml`](../StudentsManagerSystem/Views/StudentStatus/StudentStatusView.xaml)
+- [`StudentsManagerSystem/Views/StudentStatus/StudentStatusView.xaml.cs`](../StudentsManagerSystem/Views/StudentStatus/StudentStatusView.xaml.cs)
+- [`StudentsManagerSystem/Views/StudentStatus/RegistrationEditWindow.xaml`](../StudentsManagerSystem/Views/StudentStatus/RegistrationEditWindow.xaml)
+- [`StudentsManagerSystem/Views/StudentStatus/RegistrationEditWindow.xaml.cs`](../StudentsManagerSystem/Views/StudentStatus/RegistrationEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Views/StudentStatus/StatusChangeEditWindow.xaml`](../StudentsManagerSystem/Views/StudentStatus/StatusChangeEditWindow.xaml)
+- [`StudentsManagerSystem/Views/StudentStatus/StatusChangeEditWindow.xaml.cs`](../StudentsManagerSystem/Views/StudentStatus/StatusChangeEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Views/StudentStatus/ScholarshipEditWindow.xaml`](../StudentsManagerSystem/Views/StudentStatus/ScholarshipEditWindow.xaml)
+- [`StudentsManagerSystem/Views/StudentStatus/ScholarshipEditWindow.xaml.cs`](../StudentsManagerSystem/Views/StudentStatus/ScholarshipEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml`](../StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml)
+- [`StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml.cs`](../StudentsManagerSystem/Views/StudentStatus/GraduationEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Models/StudentStatus.cs`](../StudentsManagerSystem/Models/StudentStatus.cs)
+- [`StudentsManagerSystem/Data/Repositories/StudentStatusRepository.cs`](../StudentsManagerSystem/Data/Repositories/StudentStatusRepository.cs#L10)
 
 ### 7.8 功能边界
 
@@ -329,13 +329,13 @@
 
 ### 8.6 实现文件
 
-- `StudentsManagerSystem/Views/Score/ScoreView.xaml`
-- `StudentsManagerSystem/Views/Score/ScoreView.xaml.cs`
-- `StudentsManagerSystem/Views/Score/ScoreEditWindow.xaml`
-- `StudentsManagerSystem/Views/Score/ScoreEditWindow.xaml.cs`
-- `StudentsManagerSystem/Models/Score.cs`
-- `StudentsManagerSystem/Services/ScoreService.cs`
-- `StudentsManagerSystem/Data/Repositories/ScoreRepository.cs`
+- [`StudentsManagerSystem/Views/Score/ScoreView.xaml`](../StudentsManagerSystem/Views/Score/ScoreView.xaml)
+- [`StudentsManagerSystem/Views/Score/ScoreView.xaml.cs`](../StudentsManagerSystem/Views/Score/ScoreView.xaml.cs#L15)
+- [`StudentsManagerSystem/Views/Score/ScoreEditWindow.xaml`](../StudentsManagerSystem/Views/Score/ScoreEditWindow.xaml)
+- [`StudentsManagerSystem/Views/Score/ScoreEditWindow.xaml.cs`](../StudentsManagerSystem/Views/Score/ScoreEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Models/Score.cs`](../StudentsManagerSystem/Models/Score.cs)
+- [`StudentsManagerSystem/Services/ScoreService.cs`](../StudentsManagerSystem/Services/ScoreService.cs#L10)
+- [`StudentsManagerSystem/Data/Repositories/ScoreRepository.cs`](../StudentsManagerSystem/Data/Repositories/ScoreRepository.cs#L10)
 
 ### 8.7 功能边界
 
@@ -384,13 +384,13 @@
 
 ### 9.6 实现文件
 
-- `StudentsManagerSystem/Views/BasicData/BasicDataView.xaml`
-- `StudentsManagerSystem/Views/BasicData/BasicDataView.xaml.cs`
-- `StudentsManagerSystem/Views/BasicData/BasicDataEditWindow.xaml`
-- `StudentsManagerSystem/Views/BasicData/BasicDataEditWindow.xaml.cs`
-- `StudentsManagerSystem/Models/BasicData.cs`
-- `StudentsManagerSystem/Services/BasicDataService.cs`
-- `StudentsManagerSystem/Data/Repositories/BasicDataRepository.cs`
+- [`StudentsManagerSystem/Views/BasicData/BasicDataView.xaml`](../StudentsManagerSystem/Views/BasicData/BasicDataView.xaml)
+- [`StudentsManagerSystem/Views/BasicData/BasicDataView.xaml.cs`](../StudentsManagerSystem/Views/BasicData/BasicDataView.xaml.cs#L10)
+- [`StudentsManagerSystem/Views/BasicData/BasicDataEditWindow.xaml`](../StudentsManagerSystem/Views/BasicData/BasicDataEditWindow.xaml)
+- [`StudentsManagerSystem/Views/BasicData/BasicDataEditWindow.xaml.cs`](../StudentsManagerSystem/Views/BasicData/BasicDataEditWindow.xaml.cs)
+- [`StudentsManagerSystem/Models/BasicData.cs`](../StudentsManagerSystem/Models/BasicData.cs)
+- [`StudentsManagerSystem/Services/BasicDataService.cs`](../StudentsManagerSystem/Services/BasicDataService.cs#L8)
+- [`StudentsManagerSystem/Data/Repositories/BasicDataRepository.cs`](../StudentsManagerSystem/Data/Repositories/BasicDataRepository.cs#L10)
 
 ### 9.7 功能边界
 
@@ -441,10 +441,10 @@
 
 ### 10.6 实现文件
 
-- `StudentsManagerSystem/Views/Query/QueryView.xaml`
-- `StudentsManagerSystem/Views/Query/QueryView.xaml.cs`
-- `StudentsManagerSystem/Services/StudentService.cs`
-- `StudentsManagerSystem/Common/CsvExportHelper.cs`
+- [`StudentsManagerSystem/Views/Query/QueryView.xaml`](../StudentsManagerSystem/Views/Query/QueryView.xaml)
+- [`StudentsManagerSystem/Views/Query/QueryView.xaml.cs`](../StudentsManagerSystem/Views/Query/QueryView.xaml.cs#L13)
+- [`StudentsManagerSystem/Services/StudentService.cs`](../StudentsManagerSystem/Services/StudentService.cs#L8)
+- [`StudentsManagerSystem/Common/CsvExportHelper.cs`](../StudentsManagerSystem/Common/CsvExportHelper.cs#L11)
 
 ### 10.7 功能边界
 
@@ -476,10 +476,10 @@
 
 ### 11.4 实现文件
 
-- `StudentsManagerSystem/App.xaml.cs`
-- `StudentsManagerSystem/Data/DatabaseInitializer.cs`
-- `StudentsManagerSystem/Data/StudentsManagerDbContext.cs`
-- `StudentsManagerSystem/Data/DatabaseConfiguration.cs`
+- [`StudentsManagerSystem/App.xaml.cs`](../StudentsManagerSystem/App.xaml.cs#L13)
+- [`StudentsManagerSystem/Data/DatabaseInitializer.cs`](../StudentsManagerSystem/Data/DatabaseInitializer.cs#L14)
+- [`StudentsManagerSystem/Data/StudentsManagerDbContext.cs`](../StudentsManagerSystem/Data/StudentsManagerDbContext.cs#L9)
+- [`StudentsManagerSystem/Data/DatabaseConfiguration.cs`](../StudentsManagerSystem/Data/DatabaseConfiguration.cs#L11)
 
 ### 11.5 功能边界
 
@@ -488,8 +488,8 @@
 
 ### 11.6 初始化规范
 
-- 项目只能存在一个统一数据库初始化入口：`DatabaseInitializer.Initialize()`。
-- 默认数据、演示数据、初始化数据只能维护在 `StudentsManagerSystem/Data/DatabaseInitializer.cs`。
+- 项目只能存在一个统一数据库初始化入口：[`DatabaseInitializer.Initialize()`](../StudentsManagerSystem/Data/DatabaseInitializer.cs#L16)。
+- 默认数据、演示数据、初始化数据只能维护在 [`StudentsManagerSystem/Data/DatabaseInitializer.cs`](../StudentsManagerSystem/Data/DatabaseInitializer.cs#L14)。
 - Repository、Service、View、ViewModel、测试代码不得插入硬编码种子数据。
 - 如果缺少默认课程、学生、用户等数据，应修改 `DatabaseInitializer`，不能在业务代码中临时 `Add` 或写 `INSERT`。
 - 业务运行期间 Repository 只负责读写业务数据，Service 只负责业务逻辑，界面只负责交互。
